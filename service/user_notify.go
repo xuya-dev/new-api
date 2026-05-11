@@ -22,6 +22,28 @@ func NotifyRootUser(t string, subject string, content string) {
 	}
 }
 
+func NotifyChannelOwnerStatusChange(channelId int, userId int, channelName string, enabled bool, reason string) {
+	if userId <= 0 {
+		return
+	}
+	user, err := model.GetUserById(userId, false)
+	if err != nil || user == nil {
+		return
+	}
+	var subject, content string
+	if enabled {
+		subject = fmt.Sprintf("渠道 %s 已恢复", channelName)
+		content = fmt.Sprintf("您的渠道 [%s] (ID: %d) 已恢复正常工作。", channelName, channelId)
+	} else {
+		subject = fmt.Sprintf("渠道 %s 出现异常", channelName)
+		content = fmt.Sprintf("您的渠道 [%s] (ID: %d) 已被自动禁用。原因: %s", channelName, channelId, reason)
+	}
+	notify := dto.NewNotify(dto.NotifyTypeChannelUpdate, subject, content, nil)
+	if err := NotifyUser(user.Id, user.Email, user.GetSetting(), notify); err != nil {
+		common.SysLog(fmt.Sprintf("failed to notify channel owner %d: %s", userId, err.Error()))
+	}
+}
+
 func NotifyUpstreamModelUpdateWatchers(subject string, content string) {
 	var users []model.User
 	if err := model.DB.

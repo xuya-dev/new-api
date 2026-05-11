@@ -928,11 +928,46 @@ func testAllChannels(notify bool) error {
 			}
 
 			// enable channel
-			if !isChannelEnabled && service.ShouldEnableChannel(newAPIError, channel.Status) {
+			shouldEnable := !isChannelEnabled && service.ShouldEnableChannel(newAPIError, channel.Status)
+			if shouldEnable {
 				service.EnableChannel(channel.Id, common.GetContextKeyString(result.context, constant.ContextKeyChannelKey), channel.Name)
 			}
 
 			channel.UpdateResponseTime(milliseconds)
+
+			// Record uptime log
+			uptimeLog := &model.ChannelUptimeLog{
+				ChannelId:    channel.Id,
+				ResponseTime: int(milliseconds),
+				TestedAt:     common.GetTimestamp(),
+			}
+			if result.localErr != nil || result.newAPIError != nil {
+				uptimeLog.Status = 0
+				errMsg := ""
+				if result.localErr != nil {
+					errMsg = result.localErr.Error()
+				} else if result.newAPIError != nil {
+					errMsg = result.newAPIError.Error()
+				}
+				if len(errMsg) > 500 {
+					errMsg = errMsg[:500]
+				}
+				uptimeLog.ErrorMsg = errMsg
+			} else {
+				uptimeLog.Status = 1
+			}
+			_ = model.RecordChannelUptimeLog(uptimeLog)
+
+			// Notify channel owner on status change
+			if channel.UserId > 0 {
+				if isChannelEnabled && shouldBanChannel && channel.GetAutoBan() {
+					service.NotifyChannelOwnerStatusChange(channel.Id, channel.UserId, channel.Name, false, uptimeLog.ErrorMsg)
+				}
+				if shouldEnable {
+					service.NotifyChannelOwnerStatusChange(channel.Id, channel.UserId, channel.Name, true, "")
+				}
+			}
+
 			time.Sleep(common.RequestInterval)
 		}
 

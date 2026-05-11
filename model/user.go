@@ -126,6 +126,13 @@ func generateDefaultSidebarConfigForRole(userRole int) string {
 		"personal": true,
 	}
 
+	// 渠道区域 - 所有用户都可以访问（共享Token平台）
+	defaultConfig["channels"] = map[string]interface{}{
+		"enabled":     true,
+		"my_channels": true,
+		"monitor":     true,
+	}
+
 	// 管理员区域 - 根据角色决定
 	if userRole == common.RoleAdminUser {
 		// 管理员可以访问管理员区域，但不能访问系统设置

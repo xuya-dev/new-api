@@ -54,6 +54,11 @@ const DEFAULT_SIDEBAR_MODULES: SidebarModulesAdminConfig = {
     topup: true,
     personal: true,
   },
+  channels: {
+    enabled: true,
+    my_channels: true,
+    monitor: true,
+  },
   admin: {
     enabled: true,
     channel: true,
@@ -106,6 +111,8 @@ const URL_TO_CONFIG_MAP: Record<string, { section: string; module: string }> = {
   '/usage-logs/task': { section: 'console', module: 'task' },
   '/wallet': { section: 'personal', module: 'topup' },
   '/profile': { section: 'personal', module: 'personal' },
+  '/my-channels': { section: 'channels', module: 'my_channels' },
+  '/channel-monitor': { section: 'channels', module: 'monitor' },
   '/channels': { section: 'admin', module: 'channel' },
   '/models': { section: 'admin', module: 'models' },
   '/models/metadata': { section: 'admin', module: 'models' },

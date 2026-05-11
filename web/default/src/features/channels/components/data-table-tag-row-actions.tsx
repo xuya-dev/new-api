@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { handleEnableTagChannels, handleDisableTagChannels } from '../lib'
+import { useChannelScope } from '../lib/channel-scope'
 import type { Channel } from '../types'
 import { useChannels } from './channels-provider'
 
@@ -41,16 +42,17 @@ export function DataTableTagRowActions({ row }: DataTableTagRowActionsProps) {
   const { t } = useTranslation()
   const tag = row.original.tag
   const { setOpen, setCurrentTag } = useChannels()
+  const scope = useChannelScope()
   const queryClient = useQueryClient()
 
   if (!tag) return null
 
   const handleEnableAll = () => {
-    handleEnableTagChannels(tag, queryClient)
+    handleEnableTagChannels(tag, queryClient, undefined, scope)
   }
 
   const handleDisableAll = () => {
-    handleDisableTagChannels(tag, queryClient)
+    handleDisableTagChannels(tag, queryClient, undefined, scope)
   }
 
   const handleBatchEdit = () => {

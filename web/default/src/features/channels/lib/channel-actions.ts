@@ -1,47 +1,26 @@
-/*
-Copyright (C) 2023-2026 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
 import type { QueryClient } from '@tanstack/react-query'
 import i18next from 'i18next'
 import { toast } from 'sonner'
 import { formatCurrencyFromUSD } from '@/lib/currency'
 import {
-  copyChannel,
-  deleteChannel,
-  testChannel,
-  updateChannel,
-  batchDeleteChannels,
-  batchSetChannelTag,
-  enableTagChannels,
-  disableTagChannels,
-  deleteDisabledChannels,
-  fixChannelAbilities,
-  editTagChannels,
-  testAllChannels,
-  updateAllChannelsBalance,
-  updateChannelBalance,
+  copyChannel as _copyChannel,
+  deleteChannel as _deleteChannel,
+  testChannel as _testChannel,
+  updateChannel as _updateChannel,
+  batchDeleteChannels as _batchDeleteChannels,
+  batchSetChannelTag as _batchSetChannelTag,
+  enableTagChannels as _enableTagChannels,
+  disableTagChannels as _disableTagChannels,
+  deleteDisabledChannels as _deleteDisabledChannels,
+  fixChannelAbilities as _fixChannelAbilities,
+  editTagChannels as _editTagChannels,
+  testAllChannels as _testAllChannels,
+  updateAllChannelsBalance as _updateAllChannelsBalance,
+  updateChannelBalance as _updateChannelBalance,
 } from '../api'
 import { CHANNEL_STATUS, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
+import type { ChannelScopeType } from './channel-scope'
 import type { CopyChannelParams } from '../types'
-
-// ============================================================================
-// Query Keys
-// ============================================================================
 
 export const channelsQueryKeys = {
   all: ['channels'] as const,
@@ -52,23 +31,69 @@ export const channelsQueryKeys = {
   detail: (id: number) => [...channelsQueryKeys.details(), id] as const,
 }
 
-// ============================================================================
-// Single Channel Actions
-// ============================================================================
+type ScopeRef = ChannelScopeType | undefined | null
 
-/**
- * Enable a channel
- */
+function getUpdateChannel(scope: ScopeRef) {
+  return scope?.api.updateChannel ?? _updateChannel
+}
+function getDeleteChannel(scope: ScopeRef) {
+  return scope?.api.deleteChannel ?? _deleteChannel
+}
+function getTestChannel(scope: ScopeRef) {
+  return scope?.api.testChannel ?? _testChannel
+}
+function getCopyChannel(scope: ScopeRef) {
+  return scope?.api.copyChannel ?? _copyChannel
+}
+function getUpdateChannelBalance(scope: ScopeRef) {
+  return scope?.api.updateChannelBalance ?? _updateChannelBalance
+}
+function getBatchDeleteChannels(scope: ScopeRef) {
+  return scope?.api.batchDeleteChannels ?? _batchDeleteChannels
+}
+function getBatchSetChannelTag(scope: ScopeRef) {
+  return scope?.api.batchSetChannelTag ?? _batchSetChannelTag
+}
+function getEnableTagChannels(scope: ScopeRef) {
+  return scope?.api.enableTagChannels ?? _enableTagChannels
+}
+function getDisableTagChannels(scope: ScopeRef) {
+  return scope?.api.disableTagChannels ?? _disableTagChannels
+}
+function getEditTagChannels(scope: ScopeRef) {
+  return scope?.api.editTagChannels ?? _editTagChannels
+}
+function getDeleteDisabledChannels(scope: ScopeRef) {
+  return scope?.api.deleteDisabledChannels ?? _deleteDisabledChannels
+}
+function getFixChannelAbilities(scope: ScopeRef) {
+  return scope?.api.fixChannelAbilities ?? _fixChannelAbilities
+}
+function getTestAllChannels(scope: ScopeRef) {
+  return scope?.api.testAllChannels ?? _testAllChannels
+}
+function getUpdateAllChannelsBalance(scope: ScopeRef) {
+  return scope?.api.updateAllChannelsBalance ?? _updateAllChannelsBalance
+}
+function getQueryKeys(scope: ScopeRef) {
+  return scope?.queryKeys ?? channelsQueryKeys
+}
+
 export async function handleEnableChannel(
   id: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await updateChannel(id, { status: CHANNEL_STATUS.ENABLED })
+    const response = await getUpdateChannel(scope)(id, {
+      status: CHANNEL_STATUS.ENABLED,
+    })
     if (response.success) {
       toast.success(i18next.t(SUCCESS_MESSAGES.ENABLED))
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -76,21 +101,21 @@ export async function handleEnableChannel(
   }
 }
 
-/**
- * Disable a channel
- */
 export async function handleDisableChannel(
   id: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await updateChannel(id, {
+    const response = await getUpdateChannel(scope)(id, {
       status: CHANNEL_STATUS.MANUAL_DISABLED,
     })
     if (response.success) {
       toast.success(i18next.t(SUCCESS_MESSAGES.DISABLED))
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -98,35 +123,33 @@ export async function handleDisableChannel(
   }
 }
 
-/**
- * Toggle channel status (enable/disable)
- */
 export async function handleToggleChannelStatus(
   id: number,
   currentStatus: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   if (currentStatus === CHANNEL_STATUS.ENABLED) {
-    await handleDisableChannel(id, queryClient, onSuccess)
+    await handleDisableChannel(id, queryClient, onSuccess, scope)
   } else {
-    await handleEnableChannel(id, queryClient, onSuccess)
+    await handleEnableChannel(id, queryClient, onSuccess, scope)
   }
 }
 
-/**
- * Delete a channel
- */
 export async function handleDeleteChannel(
   id: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await deleteChannel(id)
+    const response = await getDeleteChannel(scope)(id)
     if (response.success) {
       toast.success(i18next.t(SUCCESS_MESSAGES.DELETED))
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -134,20 +157,17 @@ export async function handleDeleteChannel(
   }
 }
 
-/**
- * Update a specific channel field (e.g., priority, weight)
- */
 export async function handleUpdateChannelField(
   id: number,
   fieldName: string,
   value: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await updateChannel(id, { [fieldName]: value })
+    const response = await getUpdateChannel(scope)(id, { [fieldName]: value })
     if (response.success) {
-      // Show success toast with field name
       const fieldLabel =
         fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase()
       toast.success(
@@ -156,7 +176,9 @@ export async function handleUpdateChannelField(
           value,
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     } else {
       toast.error(response.message || i18next.t(ERROR_MESSAGES.UPDATE_FAILED))
@@ -166,21 +188,18 @@ export async function handleUpdateChannelField(
   }
 }
 
-/**
- * Update a specific field for all channels with a tag
- */
 export async function handleUpdateTagField(
   tag: string,
   fieldName: 'priority' | 'weight',
   value: number,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
     const params = { tag, [fieldName]: value }
-    const response = await editTagChannels(params)
+    const response = await getEditTagChannels(scope)(params)
     if (response.success) {
-      // Show success toast with field name
       const fieldLabel =
         fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase()
       toast.success(
@@ -190,7 +209,9 @@ export async function handleUpdateTagField(
           tag,
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     } else {
       toast.error(response.message || i18next.t(ERROR_MESSAGES.UPDATE_FAILED))
@@ -200,9 +221,6 @@ export async function handleUpdateTagField(
   }
 }
 
-/**
- * Test channel connectivity
- */
 export async function handleTestChannel(
   id: number,
   options?: { testModel?: string; endpointType?: string; stream?: boolean },
@@ -211,7 +229,8 @@ export async function handleTestChannel(
     responseTime?: number,
     error?: string,
     errorCode?: string
-  ) => void
+  ) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   const payload =
     options && (options.testModel || options.endpointType || options.stream)
@@ -225,7 +244,7 @@ export async function handleTestChannel(
       : undefined
 
   try {
-    const response = await testChannel(id, payload)
+    const response = await getTestChannel(scope)(id, payload)
     if (response.success) {
       toast.success(i18next.t(SUCCESS_MESSAGES.TESTED))
       onTestComplete?.(true, response.data?.response_time)
@@ -242,20 +261,22 @@ export async function handleTestChannel(
   }
 }
 
-/**
- * Copy a channel
- */
 export async function handleCopyChannel(
   id: number,
   params: CopyChannelParams,
   queryClient?: QueryClient,
-  onSuccess?: (newId: number) => void
+  onSuccess?: (newId: number) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await copyChannel(id, params)
+    const fn = getCopyChannel(scope)
+    if (!fn) return
+    const response = await fn(id, params as Record<string, unknown>)
     if (response.success && response.data?.id) {
       toast.success(i18next.t(SUCCESS_MESSAGES.COPIED))
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.(response.data.id)
     }
   } catch (_error) {
@@ -263,16 +284,16 @@ export async function handleCopyChannel(
   }
 }
 
-/**
- * Update channel balance
- */
 export async function handleUpdateChannelBalance(
   id: number,
   queryClient?: QueryClient,
-  onSuccess?: (balance: number) => void
+  onSuccess?: (balance: number) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await updateChannelBalance(id)
+    const fn = getUpdateChannelBalance(scope)
+    if (!fn) return
+    const response = await fn(id)
     if (response.success && response.balance !== undefined) {
       const balance = response.balance
       toast.success(
@@ -284,7 +305,9 @@ export async function handleUpdateChannelBalance(
           }),
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.(balance)
     } else {
       toast.error(response.message || i18next.t('Failed to update balance'))
@@ -298,17 +321,11 @@ export async function handleUpdateChannelBalance(
   }
 }
 
-// ============================================================================
-// Batch Actions
-// ============================================================================
-
-/**
- * Batch delete channels
- */
 export async function handleBatchDelete(
   ids: number[],
   queryClient?: QueryClient,
-  onSuccess?: (deletedCount: number) => void
+  onSuccess?: (deletedCount: number) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   if (ids.length === 0) {
     toast.error(i18next.t('No channels selected'))
@@ -316,14 +333,16 @@ export async function handleBatchDelete(
   }
 
   try {
-    const response = await batchDeleteChannels({ ids })
+    const response = await getBatchDeleteChannels(scope)({ ids })
     if (response.success) {
       toast.success(
         i18next.t('{{count}} channel(s) deleted', {
           count: response.data || ids.length,
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.(response.data || ids.length)
     }
   } catch (_error) {
@@ -331,13 +350,11 @@ export async function handleBatchDelete(
   }
 }
 
-/**
- * Batch enable channels
- */
 export async function handleBatchEnable(
   ids: number[],
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   if (ids.length === 0) {
     toast.error(i18next.t('No channels selected'))
@@ -345,9 +362,9 @@ export async function handleBatchEnable(
   }
 
   try {
-    // Update each channel individually
+    const updateFn = getUpdateChannel(scope)
     const promises = ids.map((id) =>
-      updateChannel(id, { status: CHANNEL_STATUS.ENABLED })
+      updateFn(id, { status: CHANNEL_STATUS.ENABLED })
     )
     const results = await Promise.allSettled(promises)
 
@@ -358,7 +375,9 @@ export async function handleBatchEnable(
       toast.success(
         i18next.t('{{count}} channel(s) enabled', { count: successCount })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
 
@@ -372,13 +391,11 @@ export async function handleBatchEnable(
   }
 }
 
-/**
- * Batch disable channels
- */
 export async function handleBatchDisable(
   ids: number[],
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   if (ids.length === 0) {
     toast.error(i18next.t('No channels selected'))
@@ -386,9 +403,9 @@ export async function handleBatchDisable(
   }
 
   try {
-    // Update each channel individually
+    const updateFn = getUpdateChannel(scope)
     const promises = ids.map((id) =>
-      updateChannel(id, { status: CHANNEL_STATUS.MANUAL_DISABLED })
+      updateFn(id, { status: CHANNEL_STATUS.MANUAL_DISABLED })
     )
     const results = await Promise.allSettled(promises)
 
@@ -399,7 +416,9 @@ export async function handleBatchDisable(
       toast.success(
         i18next.t('{{count}} channel(s) disabled', { count: successCount })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
 
@@ -415,14 +434,12 @@ export async function handleBatchDisable(
   }
 }
 
-/**
- * Batch set tag
- */
 export async function handleBatchSetTag(
   ids: number[],
   tag: string | null,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   if (ids.length === 0) {
     toast.error(i18next.t('No channels selected'))
@@ -430,10 +447,12 @@ export async function handleBatchSetTag(
   }
 
   try {
-    const response = await batchSetChannelTag({ ids, tag })
+    const response = await getBatchSetChannelTag(scope)({ ids, tag })
     if (response.success) {
       toast.success(i18next.t(SUCCESS_MESSAGES.TAG_SET))
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -441,25 +460,21 @@ export async function handleBatchSetTag(
   }
 }
 
-// ============================================================================
-// Tag-Based Actions
-// ============================================================================
-
-/**
- * Enable all channels with a tag
- */
 export async function handleEnableTagChannels(
   tag: string,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await enableTagChannels(tag)
+    const response = await getEnableTagChannels(scope)(tag)
     if (response.success) {
       toast.success(
         i18next.t('Enabled all channels with tag: {{tag}}', { tag })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -467,21 +482,21 @@ export async function handleEnableTagChannels(
   }
 }
 
-/**
- * Disable all channels with a tag
- */
 export async function handleDisableTagChannels(
   tag: string,
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await disableTagChannels(tag)
+    const response = await getDisableTagChannels(scope)(tag)
     if (response.success) {
       toast.success(
         i18next.t('Disabled all channels with tag: {{tag}}', { tag })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     }
   } catch (_error) {
@@ -489,26 +504,22 @@ export async function handleDisableTagChannels(
   }
 }
 
-// ============================================================================
-// System Actions
-// ============================================================================
-
-/**
- * Delete all disabled channels
- */
 export async function handleDeleteAllDisabled(
   queryClient?: QueryClient,
-  onSuccess?: (deletedCount: number) => void
+  onSuccess?: (deletedCount: number) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await deleteDisabledChannels()
+    const response = await getDeleteDisabledChannels(scope)()
     if (response.success) {
       toast.success(
         i18next.t('{{count}} disabled channel(s) deleted', {
           count: response.data || 0,
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.(response.data || 0)
     }
   } catch (_error) {
@@ -516,15 +527,13 @@ export async function handleDeleteAllDisabled(
   }
 }
 
-/**
- * Fix channel abilities
- */
 export async function handleFixAbilities(
   queryClient?: QueryClient,
-  onSuccess?: (result: { success: number; fails: number }) => void
+  onSuccess?: (result: { success: number; fails: number }) => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await fixChannelAbilities()
+    const response = await getFixChannelAbilities(scope)()
     if (response.success && response.data) {
       toast.success(
         i18next.t('Fixed abilities: {{success}} succeeded, {{fails}} failed', {
@@ -532,7 +541,9 @@ export async function handleFixAbilities(
           fails: response.data.fails,
         })
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.(response.data)
     }
   } catch (_error) {
@@ -540,22 +551,22 @@ export async function handleFixAbilities(
   }
 }
 
-/**
- * Test all enabled channels
- */
 export async function handleTestAllChannels(
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await testAllChannels()
+    const response = await getTestAllChannels(scope)()
     if (response.success) {
       toast.success(
         i18next.t(
           'Testing all enabled channels started. Please refresh to see results.'
         )
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     } else {
       toast.error(
@@ -567,22 +578,22 @@ export async function handleTestAllChannels(
   }
 }
 
-/**
- * Update balance for all enabled channels
- */
 export async function handleUpdateAllBalances(
   queryClient?: QueryClient,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  scope?: ChannelScopeType
 ): Promise<void> {
   try {
-    const response = await updateAllChannelsBalance()
+    const response = await getUpdateAllChannelsBalance(scope)()
     if (response.success) {
       toast.success(
         i18next.t(
           'Updating all channel balances. This may take a while. Please refresh to see results.'
         )
       )
-      queryClient?.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+      queryClient?.invalidateQueries({
+        queryKey: getQueryKeys(scope).lists(),
+      })
       onSuccess?.()
     } else {
       toast.error(

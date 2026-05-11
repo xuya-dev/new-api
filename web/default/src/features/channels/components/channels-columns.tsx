@@ -72,6 +72,7 @@ import {
   isTagAggregateRow,
   type TagRow,
 } from '../lib'
+import { useChannelScope } from '../lib/channel-scope'
 import { parseUpstreamUpdateMeta } from '../lib/upstream-update-utils'
 import type { Channel } from '../types'
 import { useChannels } from './channels-provider'
@@ -192,6 +193,7 @@ function UpstreamUpdateTags({ channel }: { channel: Channel }) {
 function PriorityCell({ channel }: { channel: Channel }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const scope = useChannelScope()
   const isTagRow = isTagAggregateRow(channel)
   const priority = channel.priority
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -220,7 +222,7 @@ function PriorityCell({ channel }: { channel: Channel }) {
           confirmText='Update'
           handleConfirm={() => {
             if (pendingValue !== null) {
-              handleUpdateTagField(tag, 'priority', pendingValue, queryClient)
+              handleUpdateTagField(tag, 'priority', pendingValue, queryClient, undefined, scope)
             }
             setConfirmOpen(false)
           }}
@@ -234,7 +236,7 @@ function PriorityCell({ channel }: { channel: Channel }) {
     <NumericSpinnerInput
       value={priority ?? 0}
       onChange={(value) => {
-        handleUpdateChannelField(channel.id, 'priority', value, queryClient)
+        handleUpdateChannelField(channel.id, 'priority', value, queryClient, undefined, scope)
       }}
       min={-999}
     />
@@ -247,6 +249,7 @@ function PriorityCell({ channel }: { channel: Channel }) {
 function WeightCell({ channel }: { channel: Channel }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const scope = useChannelScope()
   const isTagRow = isTagAggregateRow(channel)
   const weight = channel.weight
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -275,7 +278,7 @@ function WeightCell({ channel }: { channel: Channel }) {
           confirmText='Update'
           handleConfirm={() => {
             if (pendingValue !== null) {
-              handleUpdateTagField(tag, 'weight', pendingValue, queryClient)
+              handleUpdateTagField(tag, 'weight', pendingValue, queryClient, undefined, scope)
             }
             setConfirmOpen(false)
           }}
@@ -289,7 +292,7 @@ function WeightCell({ channel }: { channel: Channel }) {
     <NumericSpinnerInput
       value={weight ?? 0}
       onChange={(value) => {
-        handleUpdateChannelField(channel.id, 'weight', value, queryClient)
+        handleUpdateChannelField(channel.id, 'weight', value, queryClient, undefined, scope)
       }}
       min={0}
     />
@@ -302,6 +305,7 @@ function WeightCell({ channel }: { channel: Channel }) {
 function BalanceCell({ channel }: { channel: Channel }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const scope = useChannelScope()
   const isTagRow = isTagAggregateRow(channel)
   const balance = channel.balance || 0
   const usedQuota = channel.used_quota || 0
@@ -354,7 +358,7 @@ function BalanceCell({ channel }: { channel: Channel }) {
       return
     }
 
-    await handleUpdateChannelBalance(channel.id, queryClient)
+    await handleUpdateChannelBalance(channel.id, queryClient, undefined, scope)
     setIsUpdating(false)
   }
 

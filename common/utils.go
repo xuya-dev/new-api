@@ -9,7 +9,7 @@ import (
 	"io"
 	"log"
 	"math/big"
-	"math/rand"
+	mathrand "math/rand"
 	"net"
 	"net/url"
 	"os"
@@ -255,7 +255,7 @@ func GenerateKey() (string, error) {
 
 func GetRandomInt(max int) int {
 	//rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max)
+	return mathrand.Intn(max)
 }
 
 func GetTimestamp() int64 {
@@ -281,11 +281,22 @@ func MessageWithRequestId(message string, id string) string {
 
 func RandomSleep() {
 	// Sleep for 0-3000 ms
-	time.Sleep(time.Duration(rand.Intn(3000)) * time.Millisecond)
+	time.Sleep(time.Duration(mathrand.Intn(3000)) * time.Millisecond)
 }
 
 func GetPointer[T any](v T) *T {
 	return &v
+}
+
+func MaskKey(key string) string {
+	if key == "" {
+		return ""
+	}
+	key = strings.TrimSpace(key)
+	if len(key) <= 8 {
+		return "****"
+	}
+	return key[:4] + "****" + key[len(key)-4:]
 }
 
 func Any2Type[T any](data any) (T, error) {

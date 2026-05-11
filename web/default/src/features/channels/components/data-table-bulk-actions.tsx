@@ -44,6 +44,7 @@ import {
   handleBatchEnable,
   handleBatchSetTag,
 } from '../lib'
+import { useChannelScope } from '../lib/channel-scope'
 import type { Channel } from '../types'
 
 interface DataTableBulkActionsProps<TData> {
@@ -54,6 +55,7 @@ export function DataTableBulkActions<TData>({
   table,
 }: DataTableBulkActionsProps<TData>) {
   const { t } = useTranslation()
+  const scope = useChannelScope()
   const queryClient = useQueryClient()
   const [showTagDialog, setShowTagDialog] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -75,18 +77,18 @@ export function DataTableBulkActions<TData>({
   }
 
   const handleEnableAll = () => {
-    handleBatchEnable(selectedIds, queryClient, handleClearSelection)
+    handleBatchEnable(selectedIds, queryClient, handleClearSelection, scope)
   }
 
   const handleDisableAll = () => {
-    handleBatchDisable(selectedIds, queryClient, handleClearSelection)
+    handleBatchDisable(selectedIds, queryClient, handleClearSelection, scope)
   }
 
   const handleDeleteAll = () => {
     handleBatchDelete(selectedIds, queryClient, () => {
       setShowDeleteConfirm(false)
       handleClearSelection()
-    })
+    }, scope)
   }
 
   const handleSetTag = () => {
@@ -94,7 +96,7 @@ export function DataTableBulkActions<TData>({
       setShowTagDialog(false)
       setTagValue('')
       handleClearSelection()
-    })
+    }, scope)
   }
 
   return (

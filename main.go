@@ -113,6 +113,9 @@ func main() {
 
 	go controller.AutomaticallyTestChannels()
 
+	// Channel reward settlement
+	service.StartChannelRewardSettlement()
+
 	// Codex credential auto-refresh check every 10 minutes, refresh when expires within 1 day
 	service.StartCodexCredentialAutoRefreshTask()
 

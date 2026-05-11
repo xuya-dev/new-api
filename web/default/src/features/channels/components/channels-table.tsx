@@ -39,25 +39,22 @@ import {
   DISABLED_ROW_MOBILE,
   DataTablePage,
 } from '@/components/data-table'
-import { getChannels, searchChannels, getGroups } from '../api'
 import {
   DEFAULT_PAGE_SIZE,
   CHANNEL_STATUS,
   CHANNEL_STATUS_OPTIONS,
 } from '../constants'
 import {
-  channelsQueryKeys,
   aggregateChannelsByTag,
   isTagAggregateRow,
   getChannelTypeIcon,
   getChannelTypeLabel,
 } from '../lib'
+import { useChannelScope } from '../lib/channel-scope'
 import type { Channel, ChannelSortBy } from '../types'
 import { useChannelsColumns } from './channels-columns'
 import { useChannels } from './channels-provider'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-
-const route = getRouteApi('/_authenticated/channels/')
 
 const CHANNEL_SORTABLE_COLUMNS = new Set<ChannelSortBy>([
   'id',
@@ -74,10 +71,16 @@ function isDisabledChannelRow(channel: Channel) {
   )
 }
 
-export function ChannelsTable() {
+export function ChannelsTable({
+  routePath = '/_authenticated/channels/',
+}: {
+  routePath?: string
+} = {}) {
   const { t } = useTranslation()
+  const scope = useChannelScope()
   const { enableTagMode, idSort } = useChannels()
   const isMobile = useMediaQuery('(max-width: 640px)')
+  const route = getRouteApi(routePath as '/_authenticated/channels/')
 
   // Table state
   const [sorting, setSorting] = useState<SortingState>([])
@@ -174,15 +177,21 @@ export function ChannelsTable() {
     })
   }
 
+  const queryKeys = scope.queryKeys
+
   // Fetch groups for filter
   const { data: groupsData } = useQuery({
-    queryKey: ['groups'],
-    queryFn: getGroups,
+    queryKey: ['groups', scope.queryKeys.all[0]],
+    queryFn: async () => {
+      const getGroupsFn = scope.api.getGroups
+      if (!getGroupsFn) return { success: true, data: [] }
+      return getGroupsFn()
+    },
   })
 
   const groupOptions = useMemo(
     () =>
-      (groupsData?.data || []).map((g) => ({
+      ((groupsData as any)?.data || []).map((g: string) => ({
         label: g,
         value: g,
       })),
@@ -190,9 +199,9 @@ export function ChannelsTable() {
   )
 
   // Fetch channels data
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: channelsQueryKeys.list({
+    queryKey: queryKeys.list({
+      _search: shouldSearch,
       keyword: globalFilter,
       model: modelFilter,
       group:
@@ -214,8 +223,8 @@ export function ChannelsTable() {
       page_size: pagination.pageSize,
     }),
     queryFn: async () => {
-      if (shouldSearch) {
-        return searchChannels({
+      if (shouldSearch && scope.api.searchChannels) {
+        return scope.api.searchChannels({
           keyword: globalFilter,
           model: modelFilter,
           group:
@@ -237,7 +246,7 @@ export function ChannelsTable() {
           page_size: pagination.pageSize,
         })
       } else {
-        return getChannels({
+        return scope.api.getChannels({
           group:
             groupFilter.length > 0 && !groupFilter.includes('all')
               ? groupFilter[0]
@@ -259,6 +268,7 @@ export function ChannelsTable() {
       }
     },
     placeholderData: (previousData) => previousData,
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
   })
 
   // Apply tag aggregation if tag mode is enabled

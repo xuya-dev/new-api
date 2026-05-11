@@ -54,6 +54,10 @@ type Channel struct {
 
 	OtherSettings string `json:"settings" gorm:"column:settings"` // 其他设置，存储azure版本等不需要检索的信息，详见dto.ChannelOtherSettings
 
+	// 共享Token平台扩展字段
+	UserId   int `json:"user_id" gorm:"default:0;index"`
+	IsPublic int `json:"is_public" gorm:"default:1"`
+
 	// cache info
 	Keys []string `json:"-" gorm:"-"`
 }
@@ -1010,10 +1014,26 @@ func BatchSetChannelTag(ids []int, tag *string) error {
 }
 
 // CountAllChannels returns total channels in DB
+// Count all channels for a specific user
+func CountUserChannels(userId int) (int64, error) {
+	var total int64
+	err := DB.Model(&Channel{}).Where("user_id = ?", userId).Count(&total).Error
+	return total, err
+}
+
+// CountAllChannels returns total channels in DB
 func CountAllChannels() (int64, error) {
 	var total int64
 	err := DB.Model(&Channel{}).Count(&total).Error
 	return total, err
+}
+
+// Get channels owned by a specific user
+func GetUserChannels(userId int, startIdx int, num int, idSort bool, sortOptions ...ChannelSortOptions) ([]*Channel, error) {
+	var channels []*Channel
+	order := resolveChannelSortOptions(idSort, sortOptions)
+	err := order.Apply(DB.Where("user_id = ?", userId)).Limit(num).Offset(startIdx).Find(&channels).Error
+	return channels, err
 }
 
 // CountAllTags returns number of non-empty distinct tags

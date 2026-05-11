@@ -53,7 +53,6 @@ import {
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { MODEL_FETCHABLE_TYPES } from '../constants'
 import {
-  channelsQueryKeys,
   handleDeleteChannel,
   handleTestChannel,
   handleToggleChannelStatus,
@@ -61,6 +60,7 @@ import {
   isMultiKeyChannel,
 } from '../lib'
 import { parseUpstreamUpdateMeta } from '../lib/upstream-update-utils'
+import { useChannelScope } from '../lib/channel-scope'
 import type { Channel } from '../types'
 import { useChannels } from './channels-provider'
 
@@ -72,6 +72,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { t } = useTranslation()
   const channel = row.original
   const { setOpen, setCurrentRow, upstream } = useChannels()
+  const scope = useChannelScope()
   const queryClient = useQueryClient()
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
@@ -95,8 +96,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     setIsTesting(true)
     try {
       await handleTestChannel(channel.id, undefined, () => {
-        queryClient.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
-      })
+        queryClient.invalidateQueries({ queryKey: scope.queryKeys.lists() })
+      }, scope)
     } finally {
       setIsTesting(false)
     }
@@ -133,7 +134,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     e?.stopPropagation()
     setIsTogglingStatus(true)
     try {
-      await handleToggleChannelStatus(channel.id, channel.status, queryClient)
+      await handleToggleChannelStatus(channel.id, channel.status, queryClient, undefined, scope)
     } finally {
       setIsTogglingStatus(false)
     }
@@ -320,7 +321,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         confirmText='Delete'
         destructive
         handleConfirm={() => {
-          handleDeleteChannel(channel.id, queryClient)
+          handleDeleteChannel(channel.id, queryClient, undefined, scope)
           setDeleteConfirmOpen(false)
         }}
       />
