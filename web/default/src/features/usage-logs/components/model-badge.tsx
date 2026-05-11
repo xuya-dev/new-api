@@ -87,6 +87,12 @@ function resolveModelProvider(modelName: string): ModelProvider | null {
   if (hasAny(['command-', 'cohere-'])) {
     return { icon: 'Cohere.Color', label: 'Cohere' }
   }
+  if (hasAny(['minimax-', 'abab'])) {
+    return { icon: 'Minimax.Color', label: 'MiniMax' }
+  }
+  if (hasAny(['glm-', 'chatglm-'])) {
+    return { icon: 'Zhipu.Color', label: 'Zhipu' }
+  }
 
   return null
 }
