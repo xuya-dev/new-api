@@ -26,9 +26,9 @@ export function HowItWorks() {
   const steps = [
     {
       num: '1',
-      title: t('Configure'),
+      title: t('Share or Top Up'),
       desc: t(
-        'Add your API keys, set up channels and configure access permissions'
+        'Add your API channels to earn quota rewards, or top up your account to access the shared channel pool'
       ),
       icon: <Settings className='size-6' strokeWidth={1.5} />,
     },
@@ -36,14 +36,14 @@ export function HowItWorks() {
       num: '2',
       title: t('Connect'),
       desc: t(
-        'Connect through OpenAI, Claude, Gemini, and other compatible API routes'
+        'Use one unified API key to access OpenAI, Claude, Gemini, and 40+ other providers through our shared pool'
       ),
       icon: <Zap className='size-6' strokeWidth={1.5} />,
     },
     {
       num: '3',
-      title: t('Monitor'),
-      desc: t('Track usage, costs and performance with real-time analytics'),
+      title: t('Earn & Use'),
+      desc: t('Channel providers earn daily quota rewards. Consumers enjoy seamless access with automatic failover and monitoring'),
       icon: <BarChart3 className='size-6' strokeWidth={1.5} />,
     },
   ]

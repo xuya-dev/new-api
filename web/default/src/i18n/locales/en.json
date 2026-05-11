@@ -4456,6 +4456,37 @@
     "about.tech.cache": "Cache",
     "about.stats.providers": "AI Providers",
     "about.stats.databases": "Database Engines",
-    "about.stats.auth": "JWT, OAuth, Passkey"
+    "about.stats.auth": "JWT, OAuth, Passkey",
+
+    "home.tokenSharing.badge": "Shared Token",
+    "home.tokenSharing.title": "Share Channels, Earn Rewards",
+    "home.tokenSharing.subtitle": "Join our shared token ecosystem. Provide your API channels to the platform and earn quota rewards based on uptime and usage. Use your earned quota to access all supported AI models.",
+
+    "home.tokenSharing.provider.title": "Provide Channels",
+    "home.tokenSharing.provider.subtitle": "Share your API keys, earn quota",
+    "home.tokenSharing.provider.step1.title": "Add Your Channel",
+    "home.tokenSharing.provider.step1.desc": "Submit your OpenAI, Claude, or other API channels to the platform. Your keys are securely stored and only used for forwarding requests.",
+    "home.tokenSharing.provider.step2.title": "Keep It Online",
+    "home.tokenSharing.provider.step2.desc": "The platform automatically tests your channel health every 30 minutes. Maintain high uptime to maximize your rewards.",
+    "home.tokenSharing.provider.step3.title": "Earn Quota Daily",
+    "home.tokenSharing.provider.step3.desc": "Every 24 hours, the system calculates your rewards based on online hours and request volume. Rewards are credited directly to your account.",
+    "home.tokenSharing.provider.reward.title": "Reward Formula",
+    "home.tokenSharing.provider.reward.desc": "Online Reward: hours online × 100 quota/hour + Usage Bonus: 1% of tokens consumed through your channel",
+
+    "home.tokenSharing.consumer.title": "Use Shared Channels",
+    "home.tokenSharing.consumer.subtitle": "Access models without your own keys",
+    "home.tokenSharing.consumer.step1.title": "Get Quota",
+    "home.tokenSharing.consumer.step1.desc": "Top up your account, complete daily check-ins, or use invitation codes to get quota for accessing the shared channel pool.",
+    "home.tokenSharing.consumer.step2.title": "Send Requests",
+    "home.tokenSharing.consumer.step2.desc": "Use the unified API endpoint with your API key. The platform automatically routes your requests to healthy channels in the shared pool.",
+    "home.tokenSharing.consumer.step3.title": "Track Usage",
+    "home.tokenSharing.consumer.step3.desc": "Monitor your usage, costs, and remaining quota in real-time through the dashboard with detailed logs and analytics.",
+    "home.tokenSharing.consumer.benefit.title": "Benefits",
+    "home.tokenSharing.consumer.benefit.desc": "No need to manage multiple API keys or worry about provider rate limits. One key accesses 40+ providers with automatic failover.",
+
+    "home.tokenSharing.stats.settlement": "Settlement Cycle",
+    "home.tokenSharing.stats.uptime": "Min Uptime Rate",
+    "home.tokenSharing.stats.hourly": "Quota per Hour",
+    "home.tokenSharing.stats.bonus": "Usage Bonus"
   }
 }

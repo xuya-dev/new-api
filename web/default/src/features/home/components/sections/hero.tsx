@@ -69,7 +69,7 @@ export function Hero(props: HeroProps) {
         >
           {systemName}{' '}
           {t(
-            'is an open-source AI API gateway for self-hosted deployments. Connect multiple upstream services, manage models, keys, quotas, logs, and routing policies in one place.'
+            'is an open-source AI API gateway with a shared token ecosystem. Connect multiple upstream services, share your channels to earn quota, or use shared channels with one unified API key.'
           )}
         </p>
         <div

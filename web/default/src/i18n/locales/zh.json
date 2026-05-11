@@ -4456,6 +4456,37 @@
     "about.tech.cache": "缓存",
     "about.stats.providers": "AI 提供商",
     "about.stats.databases": "数据库引擎",
-    "about.stats.auth": "JWT、OAuth、Passkey"
+    "about.stats.auth": "JWT、OAuth、Passkey",
+
+    "home.tokenSharing.badge": "共享 Token",
+    "home.tokenSharing.title": "共享渠道，赚取奖励",
+    "home.tokenSharing.subtitle": "加入我们的共享 Token 生态。向平台提供您的 API 渠道，根据在线时长和用量获得额度奖励。使用赚取的额度访问所有支持的 AI 模型。",
+
+    "home.tokenSharing.provider.title": "提供渠道",
+    "home.tokenSharing.provider.subtitle": "分享 API 密钥，赚取额度",
+    "home.tokenSharing.provider.step1.title": "添加您的渠道",
+    "home.tokenSharing.provider.step1.desc": "将您的 OpenAI、Claude 或其他 API 渠道提交到平台。您的密钥会被安全存储，仅用于转发请求。",
+    "home.tokenSharing.provider.step2.title": "保持在线",
+    "home.tokenSharing.provider.step2.desc": "平台每 30 分钟自动检测您的渠道健康状态。保持高在线率以最大化奖励。",
+    "home.tokenSharing.provider.step3.title": "每日赚取额度",
+    "home.tokenSharing.provider.step3.desc": "系统每 24 小时根据在线时长和请求量计算奖励。奖励直接发放到您的账户。",
+    "home.tokenSharing.provider.reward.title": "奖励公式",
+    "home.tokenSharing.provider.reward.desc": "在线奖励：在线小时 × 100 额度/小时 + 用量奖励：渠道被消费的 Token 量的 1%",
+
+    "home.tokenSharing.consumer.title": "使用共享渠道",
+    "home.tokenSharing.consumer.subtitle": "无需自己的密钥即可访问模型",
+    "home.tokenSharing.consumer.step1.title": "获取额度",
+    "home.tokenSharing.consumer.step1.desc": "充值账户、每日签到或使用邀请码获取额度，用于访问共享渠道池。",
+    "home.tokenSharing.consumer.step2.title": "发送请求",
+    "home.tokenSharing.consumer.step2.desc": "使用统一 API 端点和您的 API 密钥发送请求。平台自动将请求路由到健康的共享渠道。",
+    "home.tokenSharing.consumer.step3.title": "追踪用量",
+    "home.tokenSharing.consumer.step3.desc": "通过仪表板实时监控用量、成本和剩余额度，附带详细的日志和分析。",
+    "home.tokenSharing.consumer.benefit.title": "优势",
+    "home.tokenSharing.consumer.benefit.desc": "无需管理多个 API 密钥，也不用担心提供商速率限制。一个密钥访问 40+ 提供商，自动故障转移。",
+
+    "home.tokenSharing.stats.settlement": "结算周期",
+    "home.tokenSharing.stats.uptime": "最低在线率",
+    "home.tokenSharing.stats.hourly": "每小时额度",
+    "home.tokenSharing.stats.bonus": "用量奖励"
   }
 }
