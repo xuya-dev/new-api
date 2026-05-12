@@ -56,7 +56,7 @@ const SECTION_META: Record<
     descriptionKey: 'View and manage your task logs',
   },
   reward: {
-    titleKey: 'Channel Rewards',
+    titleKey: 'Reward Logs',
     descriptionKey: 'View channel reward history',
   },
 }

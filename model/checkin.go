@@ -113,9 +113,17 @@ func userCheckinWithTransaction(checkin *Checkin, userId int, quotaAwarded int) 
 		return nil, err
 	}
 
-	// 事务成功后，异步更新缓存
+	// 事务成功后，异步更新缓存和奖励日志
 	go func() {
 		_ = cacheIncrUserQuota(userId, int64(quotaAwarded))
+		_ = RecordRewardLog(&ChannelRewardLog{
+			UserId:    userId,
+			ChannelId: 0,
+			Type:      RewardTypeCheckin,
+			Quota:     quotaAwarded,
+			Detail:    checkin.CheckinDate,
+			CreatedAt: checkin.CreatedAt,
+		})
 	}()
 
 	return checkin, nil
@@ -136,6 +144,17 @@ func userCheckinWithoutTransaction(checkin *Checkin, userId int, quotaAwarded in
 		DB.Delete(checkin)
 		return nil, errors.New("签到失败：更新额度出错")
 	}
+
+	go func() {
+		_ = RecordRewardLog(&ChannelRewardLog{
+			UserId:    userId,
+			ChannelId: 0,
+			Type:      RewardTypeCheckin,
+			Quota:     quotaAwarded,
+			Detail:    checkin.CheckinDate,
+			CreatedAt: checkin.CreatedAt,
+		})
+	}()
 
 	return checkin, nil
 }

@@ -15,7 +15,6 @@ import type { RewardLog } from '../../types'
 const REWARD_TYPE_CONFIG = {
   1: {
     label: 'Online Reward',
-    variant: 'success' as const,
     dotClass: 'bg-emerald-500',
     pillBg:
       'border border-emerald-200/40 bg-emerald-50/35 dark:border-emerald-900/40 dark:bg-emerald-950/15',
@@ -23,11 +22,38 @@ const REWARD_TYPE_CONFIG = {
   },
   2: {
     label: 'Usage Bonus',
-    variant: 'info' as const,
     dotClass: 'bg-blue-500',
     pillBg:
       'border border-blue-200/40 bg-blue-50/35 dark:border-blue-900/40 dark:bg-blue-950/15',
     pillText: 'text-blue-700/85 dark:text-blue-400/85',
+  },
+  3: {
+    label: 'Check-in',
+    dotClass: 'bg-amber-500',
+    pillBg:
+      'border border-amber-200/40 bg-amber-50/35 dark:border-amber-900/40 dark:bg-amber-950/15',
+    pillText: 'text-amber-700/85 dark:text-amber-400/85',
+  },
+  4: {
+    label: 'Invitee Bonus',
+    dotClass: 'bg-violet-500',
+    pillBg:
+      'border border-violet-200/40 bg-violet-50/35 dark:border-violet-900/40 dark:bg-violet-950/15',
+    pillText: 'text-violet-700/85 dark:text-violet-400/85',
+  },
+  5: {
+    label: 'Inviter Bonus',
+    dotClass: 'bg-pink-500',
+    pillBg:
+      'border border-pink-200/40 bg-pink-50/35 dark:border-pink-900/40 dark:bg-pink-950/15',
+    pillText: 'text-pink-700/85 dark:text-pink-400/85',
+  },
+  6: {
+    label: 'Registration',
+    dotClass: 'bg-slate-500',
+    pillBg:
+      'border border-slate-200/40 bg-slate-50/35 dark:border-slate-900/40 dark:bg-slate-950/15',
+    pillText: 'text-slate-700/85 dark:text-slate-400/85',
   },
 } as const
 
@@ -67,7 +93,11 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
       ),
       cell: ({ row }) => {
         const id = row.original.channel_id
-        if (!id) return <span className='text-muted-foreground text-xs'>-</span>
+        const type = row.original.type
+        // 非渠道奖励（签到/邀请/注册）不显示渠道
+        if (!id || type === 3 || type === 4 || type === 5 || type === 6) {
+          return <span className='text-muted-foreground text-xs'>-</span>
+        }
         return (
           <StatusBadge
             label={`#${id}`}
@@ -150,32 +180,70 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
         if (!detail)
           return <span className='text-muted-foreground text-xs'>-</span>
 
-        if (type === 1) {
-          return (
-            <div className='flex flex-col gap-0.5'>
-              <span className='text-muted-foreground/70 text-xs'>
-                {t('Uptime rate')}
-              </span>
-              <span className='font-mono text-xs font-medium tabular-nums'>
-                {detail}
-              </span>
-            </div>
-          )
+        switch (type) {
+          case 1:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('Uptime rate')}
+                </span>
+                <span className='font-mono text-xs font-medium tabular-nums'>
+                  {detail}
+                </span>
+              </div>
+            )
+          case 2:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('Channel')}
+                </span>
+                <StatusBadge
+                  label={`#${detail}`}
+                  autoColor={detail}
+                  size='sm'
+                  className='font-mono w-fit'
+                />
+              </div>
+            )
+          case 3:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('Check-in date')}
+                </span>
+                <span className='font-mono text-xs font-medium tabular-nums'>
+                  {detail}
+                </span>
+              </div>
+            )
+          case 4:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('Invite code used')}
+                </span>
+              </div>
+            )
+          case 5:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('New user invited')}
+                </span>
+              </div>
+            )
+          case 6:
+            return (
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-muted-foreground/70 text-xs'>
+                  {t('New user registration')}
+                </span>
+              </div>
+            )
+          default:
+            return <span className='text-muted-foreground text-xs'>{detail}</span>
         }
-
-        return (
-          <div className='flex flex-col gap-0.5'>
-            <span className='text-muted-foreground/70 text-xs'>
-              {t('Channel')}
-            </span>
-            <StatusBadge
-              label={`#${detail}`}
-              autoColor={detail}
-              size='sm'
-              className='font-mono w-fit'
-            />
-          </div>
-        )
       },
       meta: { label: t('Detail') },
       size: 180,

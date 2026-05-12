@@ -12,8 +12,12 @@ type ChannelRewardSummary struct {
 }
 
 const (
-	RewardTypeOnline  = 1
-	RewardTypeUsage   = 2
+	RewardTypeOnline       = 1 // 渠道在线奖励
+	RewardTypeUsage        = 2 // 渠道使用返利
+	RewardTypeCheckin      = 3 // 签到奖励
+	RewardTypeInvitee      = 4 // 邀请奖励 - 被邀请人
+	RewardTypeInviter      = 5 // 邀请奖励 - 邀请人
+	RewardTypeRegistration = 6 // 注册赠送
 )
 
 type ChannelRewardLog struct {

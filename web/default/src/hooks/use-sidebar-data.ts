@@ -102,7 +102,7 @@ export function useSidebarData(): SidebarData {
             icon: ListTodo,
           },
           {
-            title: t('Channel Rewards'),
+            title: t('Reward Logs'),
             url: '/usage-logs/reward',
             configUrls: ['/usage-logs/reward'],
             icon: Gift,

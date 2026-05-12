@@ -298,7 +298,8 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, startIdx int, num int, channel int, group string, requestId string) (logs []*Log, total int64, err error) {
 	var tx *gorm.DB
 	if logType == LogTypeUnknown {
-		tx = LOG_DB
+		// 默认排除 System 类型的日志（奖励日志已迁移到 channel_reward_logs）
+		tx = LOG_DB.Where("logs.type != ?", LogTypeSystem)
 	} else {
 		tx = LOG_DB.Where("logs.type = ?", logType)
 	}
@@ -384,7 +385,8 @@ const logSearchCountLimit = 10000
 func GetUserLogs(userId int, logType int, startTimestamp int64, endTimestamp int64, modelName string, tokenName string, startIdx int, num int, group string, requestId string) (logs []*Log, total int64, err error) {
 	var tx *gorm.DB
 	if logType == LogTypeUnknown {
-		tx = LOG_DB.Where("logs.user_id = ?", userId)
+		// 默认排除 System 类型的日志（奖励日志已迁移到 channel_reward_logs）
+		tx = LOG_DB.Where("logs.user_id = ? and logs.type != ?", userId, LogTypeSystem)
 	} else {
 		tx = LOG_DB.Where("logs.user_id = ? and logs.type = ?", userId, logType)
 	}

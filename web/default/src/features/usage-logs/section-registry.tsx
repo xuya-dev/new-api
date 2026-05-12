@@ -42,7 +42,7 @@ const USAGE_LOGS_SECTIONS = [
   },
   {
     id: 'reward',
-    titleKey: 'Channel Rewards',
+    titleKey: 'Reward Logs',
     descriptionKey: 'View channel reward history',
     build: () => null,
   },

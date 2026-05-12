@@ -146,6 +146,10 @@ export function RewardLogsFilterBar<TData>(
               <SelectItem value='all'>{t('All Types')}</SelectItem>
               <SelectItem value='1'>{t('Online Reward')}</SelectItem>
               <SelectItem value='2'>{t('Usage Bonus')}</SelectItem>
+              <SelectItem value='3'>{t('Check-in')}</SelectItem>
+              <SelectItem value='4'>{t('Invitee Bonus')}</SelectItem>
+              <SelectItem value='5'>{t('Inviter Bonus')}</SelectItem>
+              <SelectItem value='6'>{t('Registration')}</SelectItem>
             </SelectContent>
           </Select>
           {isAdmin && (
