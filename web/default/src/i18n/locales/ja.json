@@ -2522,7 +2522,7 @@
     "Multipliers for recharge pricing based on user groups.": "ユーザーグループに基づいたリチャージ価格設定の乗数。",
     "Must be a valid URL": "有効な URL を入力してください",
     "Must be at least 8 characters": "8文字以上である必要があります",
-    "My Channels": "My Channels",
+    "Channel Info": "My Channels",
     "My Subscriptions": "マイサブスクリプション",
     "my-status": "my-status",
     "MySQL detected": "MySQLが検出されました",

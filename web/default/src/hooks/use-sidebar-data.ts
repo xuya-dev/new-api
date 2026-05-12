@@ -114,7 +114,7 @@ export function useSidebarData(): SidebarData {
         title: t('Channels'),
         items: [
           {
-            title: t('My Channels'),
+            title: t('Channel Info'),
             url: '/my-channels',
             icon: Wifi,
           },

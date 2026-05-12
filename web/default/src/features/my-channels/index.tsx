@@ -12,7 +12,7 @@ export function MyChannels() {
   return (
     <ChannelsProvider scope={userChannelScope}>
       <SectionPageLayout>
-        <SectionPageLayout.Title>{t('My Channels')}</SectionPageLayout.Title>
+        <SectionPageLayout.Title>{t('Channel Info')}</SectionPageLayout.Title>
         <SectionPageLayout.Description>
           {t('Manage your personal API channels and provider configurations')}
         </SectionPageLayout.Description>

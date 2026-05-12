@@ -489,8 +489,8 @@ export const STATIC_I18N_KEYS = [
   'Expired at',
   'Cancelled at',
 
-  // My Channels
-  'My Channels',
+  // Channel Info
+  'Channel Info',
   'Add Channel',
   'Channel created',
   'Channel updated',
