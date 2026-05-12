@@ -62,6 +62,31 @@ async function testUserChannel(
   }
 }
 
+async function batchDeleteUserChannels(data: {
+  ids: number[]
+}): Promise<{ success: boolean; message?: string; data?: number }> {
+  let deleted = 0
+  for (const id of data.ids) {
+    const res = await api.delete(`/api/user/channel/${id}`)
+    if (res.data?.success) deleted++
+  }
+  return { success: true, data: deleted }
+}
+
+async function batchSetUserChannelTag(data: {
+  ids: number[]
+  tag: string | null
+}): Promise<{ success: boolean; message?: string; data?: number }> {
+  let updated = 0
+  for (const id of data.ids) {
+    const res = await api.put(`/api/user/channel/${id}`, {
+      tag: data.tag ?? '',
+    })
+    if (res.data?.success) updated++
+  }
+  return { success: true, data: updated }
+}
+
 export const userChannelScope: ChannelScopeType = {
   api: {
     getChannels: getUserChannels,
@@ -70,15 +95,17 @@ export const userChannelScope: ChannelScopeType = {
     updateChannel: updateUserChannel,
     deleteChannel: deleteUserChannel,
     testChannel: testUserChannel,
+    batchDeleteChannels: batchDeleteUserChannels,
+    batchSetChannelTag: batchSetUserChannelTag,
   },
   queryKeys: myChannelsQueryKeys,
   features: {
     tagMode: false,
     idSort: true,
-    testAll: true,
-    updateAllBalances: true,
-    fixAbilities: true,
-    deleteAllDisabled: true,
+    testAll: false,
+    updateAllBalances: false,
+    fixAbilities: false,
+    deleteAllDisabled: false,
     upstreamUpdates: false,
     copyChannel: false,
     balanceQuery: true,
