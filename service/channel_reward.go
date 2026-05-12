@@ -47,13 +47,12 @@ func settleOnlineRewards() {
 		return
 	}
 
+	rootUser := model.GetRootUser()
+
 	now := common.GetTimestamp()
 	sinceTime := now - 3600
 
 	for _, channel := range channels {
-		if channel.UserId <= 0 {
-			continue
-		}
 		if channel.Status != common.ChannelStatusEnabled {
 			continue
 		}
@@ -73,8 +72,16 @@ func settleOnlineRewards() {
 			continue
 		}
 
+		rewardUserId := channel.UserId
+		if rewardUserId <= 0 && rootUser != nil {
+			rewardUserId = rootUser.Id
+		}
+		if rewardUserId <= 0 {
+			continue
+		}
+
 		_ = model.RecordRewardLog(&model.ChannelRewardLog{
-			UserId:    channel.UserId,
+			UserId:    rewardUserId,
 			ChannelId: channel.Id,
 			Type:      model.RewardTypeOnline,
 			Quota:     onlineReward,
@@ -82,12 +89,12 @@ func settleOnlineRewards() {
 			CreatedAt: now,
 		})
 
-		err = model.IncreaseUserQuota(channel.UserId, onlineReward, false)
+		err = model.IncreaseUserQuota(rewardUserId, onlineReward, false)
 		if err != nil {
-			common.SysLog(fmt.Sprintf("failed to increase user quota: user_id=%d, error=%s", channel.UserId, err.Error()))
+			common.SysLog(fmt.Sprintf("failed to increase user quota: user_id=%d, error=%s", rewardUserId, err.Error()))
 		} else {
 			common.SysLog(fmt.Sprintf("channel online reward granted: channel_id=%d, user_id=%d, quota=%d, uptime_rate=%.2f%%, avg_response_time=%.0fms",
-				channel.Id, channel.UserId, onlineReward, uptimeRate*100, avgResponseTime))
+				channel.Id, rewardUserId, onlineReward, uptimeRate*100, avgResponseTime))
 		}
 	}
 
