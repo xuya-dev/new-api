@@ -55,16 +55,9 @@ func GetUserChannels(c *gin.Context) {
 	var total int64
 	var err error
 
-	if userRole >= common.RoleAdminUser {
-		channels, err = model.GetAllChannels(pageInfo.GetStartIdx(), pageInfo.GetPageSize(), false, idSort)
-		if err == nil {
-			total, err = model.CountAllChannels()
-		}
-	} else {
-		channels, err = model.GetUserChannels(userId, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), idSort)
-		if err == nil {
-			total, err = model.CountUserChannels(userId)
-		}
+	channels, err = model.GetUserChannels(userId, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), idSort)
+	if err == nil {
+		total, err = model.CountUserChannels(userId)
 	}
 
 	if err != nil {
@@ -93,13 +86,11 @@ func GetUserChannels(c *gin.Context) {
 	maskChannelsKeysForResponse(channels, userId, userRole)
 
 	var rewardMap map[int]int64
-	if userRole < common.RoleAdminUser {
-		summaries, err := model.GetRewardSummaryByUser(userId)
-		if err == nil && len(summaries) > 0 {
-			rewardMap = make(map[int]int64, len(summaries))
-			for _, s := range summaries {
-				rewardMap[s.ChannelId] = s.TotalQuota
-			}
+	summaries, err := model.GetRewardSummaryByUser(userId)
+	if err == nil && len(summaries) > 0 {
+		rewardMap = make(map[int]int64, len(summaries))
+		for _, s := range summaries {
+			rewardMap[s.ChannelId] = s.TotalQuota
 		}
 	}
 
