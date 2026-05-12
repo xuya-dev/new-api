@@ -1,6 +1,9 @@
 .github
 .git
 *.md
+!LICENSE
+!NOTICE
+!THIRD-PARTY-LICENSES.md
 .vscode
 .gitignore
 Makefile
