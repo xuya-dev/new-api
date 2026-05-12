@@ -452,7 +452,37 @@ function BalanceCell({ channel }: { channel: Channel }) {
  */
 export function useChannelsColumns(): ColumnDef<Channel>[] {
   const { t } = useTranslation()
-  return [
+  const scope = useChannelScope()
+  const showReward = scope.features.rewardColumn
+
+  const rewardColumn: ColumnDef<Channel> = {
+    accessorKey: 'reward_quota',
+    meta: { label: t('Reward'), mobileHidden: true },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('Reward')} />
+    ),
+    cell: ({ row }) => {
+      const rewardQuota = row.original.reward_quota
+      if (!rewardQuota) return <span className='text-muted-foreground text-xs'>-</span>
+      const usd = (rewardQuota / 500000).toFixed(6)
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger render={<span className='font-mono text-sm text-emerald-600 dark:text-emerald-400 cursor-pointer' />}>
+              ${usd}
+            </TooltipTrigger>
+            <TooltipContent side='top'>
+              <p className='text-xs'>{t('Total reward earned by this channel')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
+    },
+    size: 120,
+    enableSorting: false,
+  }
+
+  const baseColumns: ColumnDef<Channel>[] = [
     // Checkbox column
     {
       id: 'select',
@@ -1071,4 +1101,15 @@ export function useChannelsColumns(): ColumnDef<Channel>[] {
       enableHiding: false,
     },
   ]
+
+  if (showReward) {
+    const balanceIdx = baseColumns.findIndex((c) => ('accessorKey' in c && c.accessorKey === 'balance'))
+    if (balanceIdx >= 0) {
+      baseColumns.splice(balanceIdx + 1, 0, rewardColumn)
+    } else {
+      baseColumns.push(rewardColumn)
+    }
+  }
+
+  return baseColumns
 }

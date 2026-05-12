@@ -92,11 +92,48 @@ func GetUserChannels(c *gin.Context) {
 
 	maskChannelsKeysForResponse(channels, userId, userRole)
 
+	var rewardMap map[int]int64
+	if userRole < common.RoleAdminUser {
+		summaries, err := model.GetRewardSummaryByUser(userId)
+		if err == nil && len(summaries) > 0 {
+			rewardMap = make(map[int]int64, len(summaries))
+			for _, s := range summaries {
+				rewardMap[s.ChannelId] = s.TotalQuota
+			}
+		}
+	}
+
+	type channelWithReward struct {
+		*model.Channel
+		RewardQuota int64 `json:"reward_quota,omitempty"`
+	}
+
+	items := channels
+	if rewardMap != nil {
+		enriched := make([]any, 0, len(channels))
+		for _, ch := range channels {
+			rq := rewardMap[ch.Id]
+			enriched = append(enriched, channelWithReward{
+				Channel:     ch,
+				RewardQuota: rq,
+			})
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "",
+			"data": gin.H{
+				"items": enriched,
+				"total": total,
+			},
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
 		"data": gin.H{
-			"items": channels,
+			"items": items,
 			"total": total,
 		},
 	})

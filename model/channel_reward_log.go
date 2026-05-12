@@ -6,6 +6,11 @@ import (
 	"github.com/QuantumNous/new-api/common"
 )
 
+type ChannelRewardSummary struct {
+	ChannelId int `json:"channel_id"`
+	TotalQuota int64 `json:"total_quota"`
+}
+
 const (
 	RewardTypeOnline  = 1
 	RewardTypeUsage   = 2
@@ -85,7 +90,17 @@ func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64) {
 		ChannelId: channelId,
 		Type:      RewardTypeUsage,
 		Quota:     bonus,
-	Detail:    fmt.Sprintf("%d", channelId),
-	CreatedAt: common.GetTimestamp(),
+		Detail:    fmt.Sprintf("%d", channelId),
+		CreatedAt: common.GetTimestamp(),
 	})
+}
+
+func GetRewardSummaryByUser(userId int) ([]*ChannelRewardSummary, error) {
+	var results []*ChannelRewardSummary
+	err := DB.Model(&ChannelRewardLog{}).
+		Select("channel_id, SUM(quota) as total_quota").
+		Where("user_id = ?", userId).
+		Group("channel_id").
+		Find(&results).Error
+	return results, err
 }

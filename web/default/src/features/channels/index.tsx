@@ -56,6 +56,7 @@ const adminScope: ChannelScopeType = {
     modelFilter: true,
     groupFilter: true,
     typeFilter: true,
+    rewardColumn: false,
   },
 }
 

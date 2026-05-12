@@ -4113,6 +4113,7 @@
     "Total Quota": "合計クォータ",
     "Total requests allowed per period. 0 = unlimited.": "期間ごとに許可されるリクエストの総数。0 = 無制限。",
     "Total requests made": "合計リクエスト数",
+    "Total reward earned by this channel": "このチャネルで獲得した累計報酬",
     "Total tokens": "合計トークン",
     "Total Tokens": "合計トークン",
     "Total Usage": "総使用量",

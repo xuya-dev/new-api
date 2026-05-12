@@ -283,6 +283,7 @@ func migrateDB() error {
 		&PerfMetric{},
 		&ChannelUptimeLog{},
 		&ChannelReward{},
+		&ChannelRewardLog{},
 	)
 	if err != nil {
 		return err

@@ -93,5 +93,6 @@ export const userChannelScope: ChannelScopeType = {
     modelFilter: true,
     groupFilter: false,
     typeFilter: true,
+    rewardColumn: true,
   },
 }

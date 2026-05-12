@@ -149,6 +149,7 @@ export type ChannelFeatures = {
   modelFilter: boolean
   groupFilter: boolean
   typeFilter: boolean
+  rewardColumn: boolean
 }
 
 export type ChannelScopeType = {
