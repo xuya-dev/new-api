@@ -32,8 +32,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { getCodexUsage, updateChannelBalance } from '../../api'
+import { getCodexUsage } from '../../api'
 import { channelsQueryKeys } from '../../lib'
+import { useChannelScope } from '../../lib/channel-scope'
 import { useChannels } from '../channels-provider'
 import {
   CodexUsageDialog,
@@ -51,6 +52,8 @@ export function BalanceQueryDialog({
 }: BalanceQueryDialogProps) {
   const { t } = useTranslation()
   const { currentRow, setCurrentRow } = useChannels()
+  const scope = useChannelScope()
+  const scopeQueryKeys = scope.queryKeys ?? channelsQueryKeys
   const queryClient = useQueryClient()
   const [isQuerying, setIsQuerying] = useState(false)
   const [balance, setBalance] = useState<number | null>(null)
@@ -93,7 +96,12 @@ export function BalanceQueryDialog({
   const handleQueryBalance = async () => {
     setIsQuerying(true)
     try {
-      const response = await updateChannelBalance(currentRow.id)
+      const updateBalance = scope.api.updateChannelBalance
+      if (!updateBalance) {
+        toast.error(t('Balance query is not available'))
+        return
+      }
+      const response = await updateBalance(currentRow.id)
       if (response.success && response.balance !== undefined) {
         const newBalance = response.balance
         const now = Math.floor(Date.now() / 1000)
@@ -111,7 +119,7 @@ export function BalanceQueryDialog({
 
         // Invalidate queries to refresh the table
         await queryClient.invalidateQueries({
-          queryKey: channelsQueryKeys.lists(),
+          queryKey: scopeQueryKeys.lists(),
         })
       } else {
         toast.error(response.message || t('Failed to query balance'))

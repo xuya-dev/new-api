@@ -66,6 +66,7 @@ import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-ta
 import { DataTablePagination } from '@/components/data-table/pagination'
 import { StatusBadge } from '@/components/status-badge'
 import { formatResponseTime, handleTestChannel } from '../../lib'
+import { useChannelScope } from '../../lib/channel-scope'
 import { useChannels } from '../channels-provider'
 
 type ChannelTestDialogProps = {
@@ -120,6 +121,7 @@ export function ChannelTestDialog({
 }: ChannelTestDialogProps) {
   const { t } = useTranslation()
   const { currentRow } = useChannels()
+  const scope = useChannelScope()
   const [endpointType, setEndpointType] = useState('auto')
   const [isStreamTest, setIsStreamTest] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -227,7 +229,8 @@ export function ChannelTestDialog({
               error,
               errorCode,
             })
-          }
+          },
+          scope
         )
       } catch (error: unknown) {
         updateTestResult(model, {

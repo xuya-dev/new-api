@@ -226,23 +226,27 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </DropdownMenuItem>
 
           {/* Query Balance */}
+          {features.balanceQuery && (
           <DropdownMenuItem onClick={handleQueryBalance}>
             {t('Query Balance')}
             <DropdownMenuShortcut>
               <DollarSign size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
+          )}
 
           {/* Fetch Models */}
+          {features.fetchModels && (
           <DropdownMenuItem onClick={handleFetchModels}>
             {t('Fetch Models')}
             <DropdownMenuShortcut>
               <Download size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
+          )}
 
           {/* Detect Upstream Updates (only for fetchable channel types) */}
-          {MODEL_FETCHABLE_TYPES.has(channel.type) && (
+          {features.upstreamUpdates && MODEL_FETCHABLE_TYPES.has(channel.type) && (
             <DropdownMenuItem
               onClick={() => {
                 const meta = parseUpstreamUpdateMeta(channel.settings)
@@ -269,7 +273,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           )}
 
           {/* Ollama Models (only for Ollama channels) */}
-          {channel.type === 4 && (
+          {features.ollamaModels && channel.type === 4 && (
             <DropdownMenuItem onClick={handleManageOllamaModels}>
               {t('Manage Ollama Models')}
               <DropdownMenuShortcut>
@@ -281,15 +285,17 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuSeparator />
 
           {/* Copy Channel */}
+          {features.copyChannel && (
           <DropdownMenuItem onClick={handleCopy}>
             {t('Copy Channel')}
             <DropdownMenuShortcut>
               <Copy size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
+          )}
 
           {/* Manage Keys (only for multi-key channels) */}
-          {isMultiKey && (
+          {features.multiKeyManage && isMultiKey && (
             <DropdownMenuItem onClick={handleManageKeys}>
               {t('Manage Keys')}
               <DropdownMenuShortcut>

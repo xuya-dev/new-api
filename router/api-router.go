@@ -266,6 +266,7 @@ func SetApiRouter(router *gin.Engine) {
 			userChannelRoute.PUT("/:id", controller.UpdateUserChannel)
 			userChannelRoute.DELETE("/:id", controller.DeleteUserChannel)
 			userChannelRoute.GET("/test/:id", controller.TestUserChannel)
+			userChannelRoute.GET("/update_balance/:id", controller.UpdateChannelBalance)
 			userChannelRoute.GET("/models", controller.ChannelListModels)
 			userChannelRoute.GET("/models_enabled", controller.EnabledListModels)
 			userChannelRoute.POST("/fetch_models", controller.FetchModels)

@@ -135,6 +135,16 @@ async function getUserGroups() {
   }
 }
 
+async function updateUserChannelBalance(id: number) {
+  const res = await api.get(`/api/user/channel/update_balance/${id}`)
+  return res.data as {
+    success: boolean
+    message?: string
+    balance?: number
+    currency?: string
+  }
+}
+
 export const userChannelScope: ChannelScopeType = {
   api: {
     getChannels: getUserChannels,
@@ -143,6 +153,7 @@ export const userChannelScope: ChannelScopeType = {
     updateChannel: updateUserChannel,
     deleteChannel: deleteUserChannel,
     testChannel: testUserChannel,
+    updateChannelBalance: updateUserChannelBalance,
     batchDeleteChannels: batchDeleteUserChannels,
     batchSetChannelTag: batchSetUserChannelTag,
     getAllModels: getUserAllModels,
