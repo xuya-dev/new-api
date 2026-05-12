@@ -93,7 +93,7 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   key: '',
   openai_organization: '',
   models: '',
-  group: ['default'],
+  group: [],
   model_mapping: '',
   priority: 0,
   weight: 0,
