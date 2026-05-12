@@ -12,6 +12,7 @@ import { CHANNEL_TYPES } from '@/features/channels/constants'
 import * as monitorApi from './api'
 
 function HourlyTrendMini({ stats }: { stats: monitorApi.HourlyStatus[] }) {
+  const { t } = useTranslation()
   return (
     <div className='flex items-center gap-0.5'>
       {stats.map((s, i) => (
@@ -24,7 +25,7 @@ function HourlyTrendMini({ stats }: { stats: monitorApi.HourlyStatus[] }) {
                 ? 'bg-red-500'
                 : 'bg-gray-300 dark:bg-gray-600'
           }`}
-          title={`${s.hour}:00 - ${s.status === 1 ? '正常' : s.status === 0 ? '异常' : '无数据'} (${s.success}/${s.total})`}
+          title={`${s.hour}:00 - ${s.status === 1 ? t('Normal') : s.status === 0 ? t('Abnormal') : t('No data')} (${s.success}/${s.total})`}
         />
       ))}
     </div>
@@ -35,7 +36,7 @@ function HourlyTrendChart({ stats }: { stats: monitorApi.HourlyStatus[] }) {
   const { t } = useTranslation()
   return (
     <div className='space-y-2'>
-      <h4 className='text-sm font-medium text-muted-foreground'>{t('24小时成功率趋势')}</h4>
+      <h4 className='text-sm font-medium text-muted-foreground'>{t('24H Success Rate Trend')}</h4>
       <div className='flex items-end gap-1 h-16'>
         {stats.map((s, i) => (
           <div key={i} className='flex-1 flex flex-col items-center gap-1'>
@@ -141,7 +142,7 @@ export function ChannelMonitor() {
                     </TableCell>
                     <TableCell>{ch.id}</TableCell>
                     <TableCell className='font-medium'>{ch.name}</TableCell>
-                    <TableCell>{CHANNEL_TYPES[ch.type as keyof typeof CHANNEL_TYPES] || `Type ${ch.type}`}</TableCell>
+                    <TableCell>{CHANNEL_TYPES[ch.type as keyof typeof CHANNEL_TYPES] || `${t('Type')} ${ch.type}`}</TableCell>
                     <TableCell>
                       <span className='flex items-center gap-2'>
                         <span className={`inline-block size-2 rounded-full ${ch.status === 1 ? 'bg-green-500' : 'bg-red-500'}`} />

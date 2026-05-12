@@ -169,3 +169,31 @@ func DeleteHistoryLogs(c *gin.Context) {
 	})
 	return
 }
+
+func GetAllRewardLogs(c *gin.Context) {
+	pageInfo := common.GetPageQuery(c)
+	logType, _ := strconv.Atoi(c.Query("type"))
+	channelId, _ := strconv.Atoi(c.Query("channel"))
+	logs, total, err := model.GetAllRewardLogs(logType, channelId, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(logs)
+	common.ApiSuccess(c, pageInfo)
+}
+
+func GetUserRewardLogs(c *gin.Context) {
+	pageInfo := common.GetPageQuery(c)
+	userId := c.GetInt("id")
+	logType, _ := strconv.Atoi(c.Query("type"))
+	logs, total, err := model.GetRewardLogsByUser(userId, logType, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(logs)
+	common.ApiSuccess(c, pageInfo)
+}

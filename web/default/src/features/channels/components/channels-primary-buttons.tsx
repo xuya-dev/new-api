@@ -50,6 +50,15 @@ export function ChannelsPrimaryButtons() {
   const features = scope.features
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
+  const hasDropdownItems =
+    features.tagMode ||
+    features.idSort ||
+    features.testAll ||
+    features.updateAllBalances ||
+    features.upstreamUpdates ||
+    features.fixAbilities ||
+    features.deleteAllDisabled
+
   const handleTagModeToggle = (checked: boolean) => {
     localStorage.setItem('enable-tag-mode', String(checked))
     setEnableTagMode(checked)
@@ -97,6 +106,7 @@ export function ChannelsPrimaryButtons() {
           <span className='sm:hidden'>{t('Create')}</span>
         </Button>
 
+        {hasDropdownItems && (
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button variant='outline' size='sm' />}>
             <MoreHorizontal className='h-4 w-4' />
@@ -216,6 +226,7 @@ export function ChannelsPrimaryButtons() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </div>
 
       {features.deleteAllDisabled && (

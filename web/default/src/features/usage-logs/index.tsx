@@ -55,6 +55,10 @@ const SECTION_META: Record<
     titleKey: 'Task Logs',
     descriptionKey: 'View and manage your task logs',
   },
+  reward: {
+    titleKey: 'Channel Rewards',
+    descriptionKey: 'View channel reward history',
+  },
 }
 
 function UsageLogsContent() {
@@ -109,10 +113,9 @@ function UsageLogsContent() {
     [navigate]
   )
 
-  const pageMeta =
-    activeCategory === 'common' ? SECTION_META.common : SECTION_META.task
+  const pageMeta = SECTION_META[activeCategory] ?? SECTION_META.common
   const showTaskSwitcher =
-    activeCategory !== 'common' && visibleSections.length > 1
+    !['common', 'reward'].includes(activeCategory) && visibleSections.length > 1
 
   return (
     <>

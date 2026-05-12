@@ -106,6 +106,10 @@ const defaultBillingSettings: BillingSettings = {
   'checkin_setting.enabled': false,
   'checkin_setting.min_quota': 1000,
   'checkin_setting.max_quota': 10000,
+  'channel_reward_setting.enabled': true,
+  'channel_reward_setting.online_per_hour': 1000,
+  'channel_reward_setting.usage_bonus_rate': 0.5,
+  'channel_reward_setting.min_uptime_rate': 0.5,
 }
 
 export function BillingSettings() {

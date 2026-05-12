@@ -80,6 +80,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
 
   const isEnabled = isChannelEnabled(channel)
   const isMultiKey = isMultiKeyChannel(channel)
+  const features = scope.features
 
   const handleEdit = () => {
     setCurrentRow(channel)
@@ -163,6 +164,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <TooltipContent>{t('Test Connection')}</TooltipContent>
       </Tooltip>
 
+      {features.enableDisable && (
       <Tooltip>
         <TooltipTrigger
           render={
@@ -192,6 +194,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           {isEnabled ? t('Disable') : t('Enable')}
         </TooltipContent>
       </Tooltip>
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger

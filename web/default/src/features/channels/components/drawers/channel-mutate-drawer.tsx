@@ -106,7 +106,6 @@ import {
   useSecureVerification,
 } from '@/features/auth/secure-verification'
 import {
-  createChannel,
   fetchModels,
   getAllModels,
   getChannel,
@@ -114,7 +113,8 @@ import {
   getGroups,
   getPrefillGroups,
   refreshCodexCredential,
-  updateChannel,
+  createChannel as adminCreateChannel,
+  updateChannel as adminUpdateChannel,
 } from '../../api'
 import {
   ADD_MODE_OPTIONS,
@@ -151,6 +151,7 @@ import {
 } from '../../lib/status-code-risk-guard'
 import type { Channel } from '../../types'
 import { useChannels } from '../channels-provider'
+import { useChannelScope } from '../../lib/channel-scope'
 import { CodexOAuthDialog } from '../dialogs/codex-oauth-dialog'
 import { FetchModelsDialog } from '../dialogs/fetch-models-dialog'
 import {
@@ -299,6 +300,9 @@ export function ChannelMutateDrawer({
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { setOpen } = useChannels()
+  const scope = useChannelScope()
+  const createChannel = scope?.api.createChannel ?? adminCreateChannel
+  const updateChannel = scope?.api.updateChannel ?? adminUpdateChannel
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [customModel, setCustomModel] = useState('')
   const [isFetchingModels, setIsFetchingModels] = useState(false)
@@ -888,10 +892,10 @@ export function ChannelMutateDrawer({
 
   // Handle successful submission
   const handleSuccess = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
+    queryClient.invalidateQueries({ queryKey: scope.queryKeys.lists() })
     onOpenChange(false)
     setOpen(null)
-  }, [queryClient, onOpenChange, setOpen])
+  }, [queryClient, onOpenChange, setOpen, scope.queryKeys])
 
   // Show missing models confirmation dialog
   const confirmMissingModelMappings = useCallback(

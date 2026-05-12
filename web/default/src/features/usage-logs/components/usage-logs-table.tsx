@@ -159,6 +159,7 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
   }, [pageCount, ensurePageInRange])
 
   const isCommon = logCategory === 'common'
+  const isReward = logCategory === 'reward'
 
   return (
     <DataTablePage
@@ -173,10 +174,10 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
       skeletonKeyPrefix='usage-log-skeleton'
       tableHeaderClassName='bg-muted/30 sticky top-0 z-10'
       toolbar={
-        isCommon ? (
+        isReward ? null : isCommon ? (
           <CommonLogsFilterBar table={table} />
         ) : (
-          <TaskLogsFilterBar table={table} logCategory={logCategory} />
+          <TaskLogsFilterBar table={table} logCategory={logCategory as Extract<LogCategory, 'drawing' | 'task'>} />
         )
       }
       renderRow={(row) => {

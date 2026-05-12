@@ -205,6 +205,9 @@ func UpdateUserChannel(c *gin.Context) {
 	if updateData.Key != "" {
 		existing.Key = updateData.Key
 	}
+	if updateData.Status == common.ChannelStatusEnabled || updateData.Status == common.ChannelStatusManuallyDisabled {
+		existing.Status = updateData.Status
+	}
 
 	if err := existing.Update(); err != nil {
 		common.ApiError(c, err)

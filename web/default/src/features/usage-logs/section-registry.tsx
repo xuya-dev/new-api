@@ -38,7 +38,13 @@ const USAGE_LOGS_SECTIONS = [
     id: 'task',
     titleKey: 'Task Logs',
     descriptionKey: 'View and manage your task logs',
-    build: () => null, // Content is rendered directly in the page component
+    build: () => null,
+  },
+  {
+    id: 'reward',
+    titleKey: 'Channel Rewards',
+    descriptionKey: 'View channel reward history',
+    build: () => null,
   },
 ] as const
 

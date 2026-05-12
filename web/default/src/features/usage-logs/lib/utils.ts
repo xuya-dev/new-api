@@ -26,6 +26,8 @@ import {
   getUserMidjourneyLogs,
   getAllTaskLogs,
   getUserTaskLogs,
+  getAllRewardLogs,
+  getUserRewardLogs,
 } from '../api'
 import {
   LOG_TYPES,
@@ -260,6 +262,22 @@ export async function fetchLogsByCategory(
       isAdmin,
     })
     return isAdmin ? await getAllLogs(params) : await getUserLogs(params)
+  }
+
+  if (logCategory === 'reward') {
+    const rewardParams: Record<string, unknown> = {
+      p: page,
+      page_size: pageSize,
+    }
+    if (searchParams.type) {
+      rewardParams.type = searchParams.type
+    }
+    if (searchParams.channel) {
+      rewardParams.channel = searchParams.channel
+    }
+    return isAdmin
+      ? await getAllRewardLogs(rewardParams)
+      : await getUserRewardLogs(rewardParams)
   }
 
   // For drawing and task logs

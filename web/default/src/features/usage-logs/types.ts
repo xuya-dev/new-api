@@ -28,7 +28,7 @@ import type { UsageLog } from './data/schema'
 /**
  * Log category for different log types
  */
-export type LogCategory = 'common' | 'drawing' | 'task'
+export type LogCategory = 'common' | 'drawing' | 'task' | 'reward'
 
 // ============================================================================
 // Filter Types
@@ -356,4 +356,21 @@ export interface UserInfo {
   aff_count?: number
   aff_quota?: number
   remark?: string
+}
+
+export interface RewardLog {
+  id: number
+  user_id: number
+  channel_id: number
+  type: number
+  quota: number
+  detail: string
+  created_at: number
+}
+
+export interface GetRewardLogsParams {
+  p?: number
+  page_size?: number
+  type?: number
+  channel?: number
 }

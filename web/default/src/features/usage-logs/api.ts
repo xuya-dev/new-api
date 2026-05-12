@@ -25,6 +25,7 @@ import type {
   GetLogStatsResponse,
   GetMidjourneyLogsParams,
   GetTaskLogsParams,
+  GetRewardLogsParams,
   UserInfo,
 } from './types'
 
@@ -109,3 +110,13 @@ export const getAllTaskLogs = (params: GetTaskLogsParams) =>
 
 export const getUserTaskLogs = (params: GetTaskLogsParams) =>
   fetchLogs('/api/task', params, false)
+
+// ============================================================================
+// Reward Logs API
+// ============================================================================
+
+export const getAllRewardLogs = (params: GetRewardLogsParams = {}) =>
+  fetchLogs('/api/log/reward', params, true)
+
+export const getUserRewardLogs = (params: GetRewardLogsParams = {}) =>
+  fetchLogs('/api/log/reward', params, false)

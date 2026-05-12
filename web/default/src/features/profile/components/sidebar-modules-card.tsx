@@ -120,6 +120,23 @@ export function SidebarModulesCard() {
         },
       ],
     },
+    {
+      key: 'channels',
+      title: t('Channels'),
+      description: t('User channel management and monitoring'),
+      modules: [
+        {
+          key: 'my_channels',
+          title: t('My Channels'),
+          description: t('Manage personal API channels'),
+        },
+        {
+          key: 'monitor',
+          title: t('Channel Monitor'),
+          description: t('Monitor channel status and performance'),
+        },
+      ],
+    },
   ]
 
   const loadConfig = useCallback(async () => {

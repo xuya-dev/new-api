@@ -72,6 +72,11 @@ export const SIDEBAR_MODULES_DEFAULT: SidebarModulesAdminConfig = {
     topup: true,
     personal: true,
   },
+  channels: {
+    enabled: true,
+    my_channels: true,
+    monitor: true,
+  },
   admin: {
     enabled: true,
     channel: true,

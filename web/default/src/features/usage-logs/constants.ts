@@ -321,6 +321,7 @@ export const LOG_CATEGORY_LABELS: Record<LogCategory, string> = {
   common: 'Common',
   drawing: 'Drawing',
   task: 'Task',
+  reward: 'Reward',
 }
 
 // ============================================================================

@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { parseCurrencyDisplayType } from '@/lib/currency'
 import { CheckinSettingsSection } from '../general/checkin-settings-section'
+import { ChannelRewardSettingsSection } from '../general/channel-reward-settings-section'
 import { PricingSection } from '../general/pricing-section'
 import { QuotaSettingsSection } from '../general/quota-settings-section'
 import { PaymentSettingsSection } from '../integrations/payment-settings-section'
@@ -200,6 +201,21 @@ const BILLING_SECTIONS = [
           enabled: settings['checkin_setting.enabled'],
           minQuota: settings['checkin_setting.min_quota'],
           maxQuota: settings['checkin_setting.max_quota'],
+        }}
+      />
+    ),
+  },
+  {
+    id: 'channel-reward',
+    titleKey: 'Channel Rewards',
+    descriptionKey: 'Configure channel provider uptime and usage rewards',
+    build: (settings: BillingSettings) => (
+      <ChannelRewardSettingsSection
+        defaultValues={{
+          enabled: settings['channel_reward_setting.enabled'],
+          onlinePerHour: settings['channel_reward_setting.online_per_hour'],
+          usageBonusRate: settings['channel_reward_setting.usage_bonus_rate'],
+          minUptimeRate: settings['channel_reward_setting.min_uptime_rate'],
         }}
       />
     ),

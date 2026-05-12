@@ -255,6 +255,10 @@ export type BillingSettings = {
   'checkin_setting.enabled': boolean
   'checkin_setting.min_quota': number
   'checkin_setting.max_quota': number
+  'channel_reward_setting.enabled': boolean
+  'channel_reward_setting.online_per_hour': number
+  'channel_reward_setting.usage_bonus_rate': number
+  'channel_reward_setting.min_uptime_rate': number
 }
 
 export type OperationsSettings = {

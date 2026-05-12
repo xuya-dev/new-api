@@ -67,6 +67,10 @@ export function SidebarModulesSection({
       title: t('Personal area'),
       description: t('Wallet management and personal preferences.'),
     },
+    channels: {
+      title: t('Channels'),
+      description: t('User channel management and monitoring.'),
+    },
     admin: {
       title: t('Admin area'),
       description: t('Global configuration and administrative tools.'),
@@ -117,6 +121,16 @@ export function SidebarModulesSection({
       personal: {
         title: t('Profile'),
         description: t('Personal settings and profile management.'),
+      },
+    },
+    channels: {
+      my_channels: {
+        title: t('My Channels'),
+        description: t('Manage personal API channels and provider configurations.'),
+      },
+      monitor: {
+        title: t('Channel Monitor'),
+        description: t('Monitor channel uptime, response time and test results.'),
       },
     },
     admin: {

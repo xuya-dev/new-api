@@ -57,6 +57,7 @@ export function DataTableBulkActions<TData>({
   const { t } = useTranslation()
   const scope = useChannelScope()
   const queryClient = useQueryClient()
+  const features = scope.features
   const [showTagDialog, setShowTagDialog] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [tagValue, setTagValue] = useState('')
@@ -102,6 +103,7 @@ export function DataTableBulkActions<TData>({
   return (
     <>
       <BulkActionsToolbar table={table} entityName='channel'>
+        {features.enableDisable && (
         <Tooltip>
           <TooltipTrigger
             render={
@@ -122,7 +124,9 @@ export function DataTableBulkActions<TData>({
             <p>{t('Enable selected channels')}</p>
           </TooltipContent>
         </Tooltip>
+        )}
 
+        {features.enableDisable && (
         <Tooltip>
           <TooltipTrigger
             render={
@@ -143,6 +147,7 @@ export function DataTableBulkActions<TData>({
             <p>{t('Disable selected channels')}</p>
           </TooltipContent>
         </Tooltip>
+        )}
 
         <Tooltip>
           <TooltipTrigger
