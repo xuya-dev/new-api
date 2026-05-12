@@ -93,8 +93,15 @@ func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64) {
 		return
 	}
 	userId, err := GetChannelUserId(channelId)
-	if err != nil || userId <= 0 {
+	if err != nil {
 		return
+	}
+	if userId <= 0 {
+		rootUser := GetRootUser()
+		if rootUser == nil {
+			return
+		}
+		userId = rootUser.Id
 	}
 	bonus := int(float64(consumedQuota) * bonusRate)
 	if bonus <= 0 {
