@@ -29,8 +29,14 @@ async function getUserChannel(id: number) {
   }
 }
 
-async function createUserChannel(data: Record<string, unknown>) {
-  const res = await api.post('/api/user/channel', data)
+async function createUserChannel(
+  data: Record<string, unknown>
+) {
+  const channelData =
+    'channel' in data && typeof data.channel === 'object' && data.channel !== null
+      ? (data.channel as Record<string, unknown>)
+      : data
+  const res = await api.post('/api/user/channel', channelData)
   return res.data as { success: boolean; message?: string }
 }
 

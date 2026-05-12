@@ -334,9 +334,12 @@ export function ChannelMutateDrawer({
   const channelId = currentRow?.id ?? null
 
   // Fetch channel details if editing
+  const getChannelFn = scope.api.getChannel ?? getChannel
+  const scopeQueryKeys = scope.queryKeys ?? channelsQueryKeys
+
   const { data: channelData } = useQuery({
-    queryKey: channelsQueryKeys.detail(currentRow?.id || 0),
-    queryFn: () => getChannel(currentRow!.id),
+    queryKey: scopeQueryKeys.detail(currentRow?.id || 0),
+    queryFn: () => getChannelFn(currentRow!.id),
     enabled: isEditing && Boolean(currentRow?.id),
   })
 
