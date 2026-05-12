@@ -170,6 +170,41 @@ func DeleteHistoryLogs(c *gin.Context) {
 	return
 }
 
+func GetAllRewardLogStats(c *gin.Context) {
+	logType, _ := strconv.Atoi(c.Query("type"))
+	channelId, _ := strconv.Atoi(c.Query("channel"))
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	stats, err := model.GetRewardLogStats(0, logType, channelId, startTimestamp, endTimestamp)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    stats,
+	})
+}
+
+func GetUserRewardLogStats(c *gin.Context) {
+	userId := c.GetInt("id")
+	logType, _ := strconv.Atoi(c.Query("type"))
+	channelId, _ := strconv.Atoi(c.Query("channel"))
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	stats, err := model.GetRewardLogStats(userId, logType, channelId, startTimestamp, endTimestamp)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    stats,
+	})
+}
+
 func GetAllRewardLogs(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	logType, _ := strconv.Atoi(c.Query("type"))

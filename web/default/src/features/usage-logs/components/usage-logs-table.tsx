@@ -40,10 +40,12 @@ import { DataTablePage } from '@/components/data-table'
 import { DEFAULT_LOGS_DATA, LOG_TYPE_ENUM } from '../constants'
 import { useColumnsByCategory } from '../lib/columns'
 import { fetchLogsByCategory } from '../lib/utils'
-import type { LogCategory } from '../types'
+import type { LogCategory, RewardLog } from '../types'
 import { CommonLogsFilterBar } from './common-logs-filter-bar'
 import { TaskLogsFilterBar } from './task-logs-filter-bar'
 import { RewardLogsFilterBar } from './reward-logs-filter-bar'
+import { getRewardRowTint } from './columns/reward-logs-columns'
+import { useUsageLogsContext } from './usage-logs-provider'
 
 const route = getRouteApi('/_authenticated/usage-logs/$section')
 
@@ -61,6 +63,8 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
   const isAdmin = useIsAdmin()
   const isMobile = useMediaQuery('(max-width: 640px)')
   const searchParams = route.useSearch()
+  const { setSelectedRewardLog, setRewardDetailOpen } =
+    useUsageLogsContext()
 
   const {
     columnFilters,
@@ -184,14 +188,33 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
         )
       }
       renderRow={(row) => {
-        const logType = (row.original as Record<string, unknown>).type as
-          | number
-          | undefined
-        const tintClass =
-          isCommon && logType != null ? (logTypeRowTint[logType] ?? '') : ''
+        const rowData = row.original as Record<string, unknown>
+        const logType = rowData.type as number | undefined
+        let tintClass = ''
+
+        if (isCommon && logType != null) {
+          tintClass = logTypeRowTint[logType] ?? ''
+        } else if (isReward && logType != null) {
+          tintClass = getRewardRowTint(logType)
+        }
+
+        const handleRowClick = isReward
+          ? () => {
+              setSelectedRewardLog(rowData as unknown as RewardLog)
+              setRewardDetailOpen(true)
+            }
+          : undefined
 
         return (
-          <TableRow key={row.id} className={cn('transition-colors', tintClass)}>
+          <TableRow
+            key={row.id}
+            className={cn(
+              'transition-colors',
+              tintClass,
+              isReward && 'cursor-pointer hover:bg-muted/50'
+            )}
+            onClick={handleRowClick}
+          >
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className={isCommon ? 'py-2' : 'py-3.5'}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

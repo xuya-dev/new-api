@@ -368,8 +368,26 @@ export interface RewardLog {
   created_at: number
 }
 
+export interface RewardLogStats {
+  total_quota: number
+  total_count: number
+}
+
 export interface RewardLogFilters extends CommonFilters {
   type?: number
+}
+
+export interface GetRewardLogStatsParams {
+  type?: number
+  channel?: number
+  start_timestamp?: number
+  end_timestamp?: number
+}
+
+export interface GetRewardLogStatsResponse {
+  success: boolean
+  message?: string
+  data?: RewardLogStats
 }
 
 export interface GetRewardLogsParams {

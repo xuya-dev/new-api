@@ -34,6 +34,7 @@ import { DataTableToolbar } from '@/components/data-table'
 import { getDefaultTimeRange } from '../lib/utils'
 import type { RewardLogFilters } from '../types'
 import { CompactDateTimeRangePicker } from './compact-date-time-range-picker'
+import { RewardLogsStats } from './reward-logs-stats'
 
 const route = getRouteApi('/_authenticated/usage-logs/$section')
 
@@ -91,6 +92,7 @@ export function RewardLogsFilterBar<TData>(
       search,
     })
     queryClient.invalidateQueries({ queryKey: ['logs'] })
+    queryClient.invalidateQueries({ queryKey: ['reward-logs-stats'] })
   }, [filters, navigate, queryClient])
 
   const handleReset = useCallback(() => {
@@ -106,6 +108,7 @@ export function RewardLogsFilterBar<TData>(
       },
     })
     queryClient.invalidateQueries({ queryKey: ['logs'] })
+    queryClient.invalidateQueries({ queryKey: ['reward-logs-stats'] })
   }, [navigate, queryClient])
 
   const handleKeyDown = useCallback(
@@ -120,6 +123,7 @@ export function RewardLogsFilterBar<TData>(
   return (
     <DataTableToolbar
       table={props.table}
+      leftActions={<RewardLogsStats />}
       customSearch={
         <CompactDateTimeRangePicker
           start={filters.startTime}

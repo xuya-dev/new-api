@@ -320,7 +320,9 @@ func SetApiRouter(router *gin.Engine) {
 
 		rewardRoute := apiRouter.Group("/log/reward")
 		rewardRoute.GET("/", middleware.AdminAuth(), controller.GetAllRewardLogs)
+		rewardRoute.GET("/stat", middleware.AdminAuth(), controller.GetAllRewardLogStats)
 		rewardRoute.GET("/self", middleware.UserAuth(), controller.GetUserRewardLogs)
+		rewardRoute.GET("/self/stat", middleware.UserAuth(), controller.GetUserRewardLogStats)
 
 		dataRoute := apiRouter.Group("/data")
 		dataRoute.GET("/", middleware.AdminAuth(), controller.GetAllQuotaDates)

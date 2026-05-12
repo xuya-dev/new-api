@@ -26,6 +26,8 @@ import type {
   GetMidjourneyLogsParams,
   GetTaskLogsParams,
   GetRewardLogsParams,
+  GetRewardLogStatsParams,
+  GetRewardLogStatsResponse,
   UserInfo,
 } from './types'
 
@@ -120,3 +122,17 @@ export const getAllRewardLogs = (params: GetRewardLogsParams = {}) =>
 
 export const getUserRewardLogs = (params: GetRewardLogsParams = {}) =>
   fetchLogs('/api/log/reward', params, false)
+
+export async function getRewardLogStats(
+  params: GetRewardLogStatsParams = {},
+  isAdmin: boolean
+): Promise<GetRewardLogStatsResponse> {
+  const queryParams = buildQueryParams(
+    params as unknown as Record<string, unknown>
+  )
+  const path = isAdmin
+    ? '/api/log/reward/stat'
+    : '/api/log/reward/self/stat'
+  const res = await api.get(`${path}?${queryParams}`)
+  return res.data
+}

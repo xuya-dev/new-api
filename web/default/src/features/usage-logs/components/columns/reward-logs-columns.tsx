@@ -9,16 +9,18 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { StatusBadge } from '@/components/status-badge'
+import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
 import type { RewardLog } from '../../types'
 
-const REWARD_TYPE_CONFIG = {
+export const REWARD_TYPE_CONFIG = {
   1: {
     label: 'Online Reward',
     dotClass: 'bg-emerald-500',
     pillBg:
       'border border-emerald-200/40 bg-emerald-50/35 dark:border-emerald-900/40 dark:bg-emerald-950/15',
     pillText: 'text-emerald-700/85 dark:text-emerald-400/85',
+    variant: 'green' as StatusBadgeProps['variant'],
+    rowTint: '',
   },
   2: {
     label: 'Usage Bonus',
@@ -26,6 +28,8 @@ const REWARD_TYPE_CONFIG = {
     pillBg:
       'border border-blue-200/40 bg-blue-50/35 dark:border-blue-900/40 dark:bg-blue-950/15',
     pillText: 'text-blue-700/85 dark:text-blue-400/85',
+    variant: 'blue' as StatusBadgeProps['variant'],
+    rowTint: 'bg-blue-50/30 dark:bg-blue-950/15',
   },
   3: {
     label: 'Check-in',
@@ -33,6 +37,8 @@ const REWARD_TYPE_CONFIG = {
     pillBg:
       'border border-amber-200/40 bg-amber-50/35 dark:border-amber-900/40 dark:bg-amber-950/15',
     pillText: 'text-amber-700/85 dark:text-amber-400/85',
+    variant: 'orange' as StatusBadgeProps['variant'],
+    rowTint: 'bg-amber-50/30 dark:bg-amber-950/15',
   },
   4: {
     label: 'Invitee Bonus',
@@ -40,6 +46,8 @@ const REWARD_TYPE_CONFIG = {
     pillBg:
       'border border-violet-200/40 bg-violet-50/35 dark:border-violet-900/40 dark:bg-violet-950/15',
     pillText: 'text-violet-700/85 dark:text-violet-400/85',
+    variant: 'violet' as StatusBadgeProps['variant'],
+    rowTint: 'bg-violet-50/30 dark:bg-violet-950/15',
   },
   5: {
     label: 'Inviter Bonus',
@@ -47,6 +55,8 @@ const REWARD_TYPE_CONFIG = {
     pillBg:
       'border border-pink-200/40 bg-pink-50/35 dark:border-pink-900/40 dark:bg-pink-950/15',
     pillText: 'text-pink-700/85 dark:text-pink-400/85',
+    variant: 'pink' as StatusBadgeProps['variant'],
+    rowTint: 'bg-pink-50/30 dark:bg-pink-950/15',
   },
   6: {
     label: 'Registration',
@@ -54,8 +64,15 @@ const REWARD_TYPE_CONFIG = {
     pillBg:
       'border border-slate-200/40 bg-slate-50/35 dark:border-slate-900/40 dark:bg-slate-950/15',
     pillText: 'text-slate-700/85 dark:text-slate-400/85',
+    variant: 'neutral' as StatusBadgeProps['variant'],
+    rowTint: 'bg-slate-50/30 dark:bg-slate-950/15',
   },
 } as const
+
+export function getRewardRowTint(type: number): string {
+  const config = REWARD_TYPE_CONFIG[type as keyof typeof REWARD_TYPE_CONFIG]
+  return config?.rowTint ?? ''
+}
 
 function formatRewardQuota(quota: number): string {
   if (!quota) return '-'
@@ -73,6 +90,9 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
       ),
       cell: ({ row }) => {
         const ts = row.original.created_at
+        const type = row.original.type as keyof typeof REWARD_TYPE_CONFIG
+        const config = REWARD_TYPE_CONFIG[type]
+
         if (!ts) return <span className='text-muted-foreground text-xs'>-</span>
 
         return (
@@ -80,6 +100,14 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
             <span className='font-mono text-xs tabular-nums'>
               {formatTimestampToDate(ts)}
             </span>
+            {config && (
+              <StatusBadge
+                label={t(config.label)}
+                variant={config.variant}
+                size='sm'
+                copyable={false}
+              />
+            )}
           </div>
         )
       },

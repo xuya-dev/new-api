@@ -20,7 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
  * Shared constants for usage logs feature
  */
 import type { StatusBadgeProps } from '@/components/status-badge'
-import type { LogStatistics, LogCategory } from './types'
+import type { LogStatistics, LogCategory, RewardLogStats } from './types'
 
 // ============================================================================
 // Default Values
@@ -33,6 +33,11 @@ export const DEFAULT_LOG_STATS: LogStatistics = {
   quota: 0,
   rpm: 0,
   tpm: 0,
+}
+
+export const DEFAULT_REWARD_STATS: RewardLogStats = {
+  total_quota: 0,
+  total_count: 0,
 }
 
 /**

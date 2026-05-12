@@ -25,6 +25,7 @@ import { SectionPageLayout } from '@/components/layout'
 import type { NavGroup } from '@/components/layout/types'
 import { CacheStatsDialog } from '@/features/system-settings/general/channel-affinity/cache-stats-dialog'
 import { UserInfoDialog } from './components/dialogs/user-info-dialog'
+import { RewardDetailDialog } from './components/dialogs/reward-detail-dialog'
 import {
   UsageLogsProvider,
   useUsageLogsContext,
@@ -76,6 +77,9 @@ function UsageLogsContent() {
     affinityTarget,
     affinityDialogOpen,
     setAffinityDialogOpen,
+    selectedRewardLog,
+    rewardDetailOpen,
+    setRewardDetailOpen,
   } = useUsageLogsContext()
   const tabNavGroups = useMemo<NavGroup[]>(
     () => [
@@ -166,6 +170,12 @@ function UsageLogsContent() {
               }
             : null
         }
+      />
+
+      <RewardDetailDialog
+        log={selectedRewardLog}
+        open={rewardDetailOpen}
+        onOpenChange={setRewardDetailOpen}
       />
     </>
   )

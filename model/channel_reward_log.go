@@ -114,6 +114,33 @@ func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64) {
 	})
 }
 
+type RewardLogStats struct {
+	TotalQuota int64 `json:"total_quota"`
+	TotalCount int64 `json:"total_count"`
+}
+
+func GetRewardLogStats(userId int, logType int, channelId int, startTimestamp int64, endTimestamp int64) (*RewardLogStats, error) {
+	var stats RewardLogStats
+	query := DB.Model(&ChannelRewardLog{})
+	if userId > 0 {
+		query = query.Where("user_id = ?", userId)
+	}
+	if logType > 0 {
+		query = query.Where("type = ?", logType)
+	}
+	if channelId > 0 {
+		query = query.Where("channel_id = ?", channelId)
+	}
+	if startTimestamp > 0 {
+		query = query.Where("created_at >= ?", startTimestamp)
+	}
+	if endTimestamp > 0 {
+		query = query.Where("created_at <= ?", endTimestamp)
+	}
+	err := query.Select("COALESCE(SUM(quota), 0) as total_quota, COUNT(*) as total_count").Scan(&stats).Error
+	return &stats, err
+}
+
 func GetRewardSummaryByUser(userId int) ([]*ChannelRewardSummary, error) {
 	var results []*ChannelRewardSummary
 	err := DB.Model(&ChannelRewardLog{}).
