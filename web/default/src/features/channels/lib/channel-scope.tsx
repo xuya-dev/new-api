@@ -126,6 +126,18 @@ export type ChannelScopeApi = {
     message?: string
     data?: string[]
   }>
+  getAllModels?: () => Promise<{
+    success: boolean
+    message?: string
+    data?: Array<{ id: string; [key: string]: unknown }>
+  }>
+  getPrefillGroups?: (
+    type: 'model' | 'group'
+  ) => Promise<{
+    success: boolean
+    message?: string
+    data?: Array<{ id: number; name: string; items: string | string[] }>
+  }>
 }
 
 export type ChannelFeatures = {

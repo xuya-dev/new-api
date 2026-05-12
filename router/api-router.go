@@ -266,6 +266,8 @@ func SetApiRouter(router *gin.Engine) {
 			userChannelRoute.PUT("/:id", controller.UpdateUserChannel)
 			userChannelRoute.DELETE("/:id", controller.DeleteUserChannel)
 			userChannelRoute.GET("/test/:id", controller.TestUserChannel)
+			userChannelRoute.GET("/models", controller.ChannelListModels)
+			userChannelRoute.GET("/models_enabled", controller.EnabledListModels)
 		}
 		monitorRoute := apiRouter.Group("/monitor")
 		monitorRoute.Use(middleware.UserAuth())
@@ -334,15 +336,16 @@ func SetApiRouter(router *gin.Engine) {
 			logRoute.GET("/token", middleware.TokenAuthReadOnly(), controller.GetLogByKey)
 		}
 		groupRoute := apiRouter.Group("/group")
-		groupRoute.Use(middleware.AdminAuth())
+		groupRoute.Use(middleware.UserAuth())
 		{
 			groupRoute.GET("/", controller.GetGroups)
 		}
 
 		prefillGroupRoute := apiRouter.Group("/prefill_group")
-		prefillGroupRoute.Use(middleware.AdminAuth())
+		prefillGroupRoute.Use(middleware.UserAuth())
 		{
 			prefillGroupRoute.GET("/", controller.GetPrefillGroups)
+			prefillGroupRoute.Use(middleware.AdminAuth())
 			prefillGroupRoute.POST("/", controller.CreatePrefillGroup)
 			prefillGroupRoute.PUT("/", controller.UpdatePrefillGroup)
 			prefillGroupRoute.DELETE("/:id", controller.DeletePrefillGroup)

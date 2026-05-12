@@ -87,6 +87,35 @@ async function batchSetUserChannelTag(data: {
   return { success: true, data: updated }
 }
 
+async function getUserAllModels() {
+  const res = await api.get('/api/user/channel/models')
+  return res.data as {
+    success: boolean
+    message?: string
+    data?: Array<{ id: string; [key: string]: unknown }>
+  }
+}
+
+async function getUserPrefillGroups(
+  type: 'model' | 'group' = 'model'
+) {
+  const res = await api.get('/api/prefill_group', { params: { type } })
+  return res.data as {
+    success: boolean
+    message?: string
+    data?: Array<{ id: number; name: string; items: string | string[] }>
+  }
+}
+
+async function getUserGroups() {
+  const res = await api.get('/api/group/')
+  return res.data as {
+    success: boolean
+    message?: string
+    data?: string[]
+  }
+}
+
 export const userChannelScope: ChannelScopeType = {
   api: {
     getChannels: getUserChannels,
@@ -97,6 +126,9 @@ export const userChannelScope: ChannelScopeType = {
     testChannel: testUserChannel,
     batchDeleteChannels: batchDeleteUserChannels,
     batchSetChannelTag: batchSetUserChannelTag,
+    getAllModels: getUserAllModels,
+    getPrefillGroups: getUserPrefillGroups,
+    getGroups: getUserGroups,
   },
   queryKeys: myChannelsQueryKeys,
   features: {

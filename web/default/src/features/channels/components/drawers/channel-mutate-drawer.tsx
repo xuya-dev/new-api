@@ -343,19 +343,21 @@ export function ChannelMutateDrawer({
   // Fetch available groups
   const { data: groupsData, isLoading: isLoadingGroups } = useQuery({
     queryKey: ['groups'],
-    queryFn: getGroups,
+    queryFn: scope.api.getGroups ?? getGroups,
   })
 
   // Fetch all available models
   const { data: allModelsData } = useQuery({
     queryKey: ['channel_models'],
-    queryFn: getAllModels,
+    queryFn: scope.api.getAllModels ?? getAllModels,
   })
 
   // Fetch prefill model groups
   const { data: prefillGroupsData } = useQuery({
     queryKey: ['prefill_groups', 'model'],
-    queryFn: () => getPrefillGroups('model'),
+    queryFn: scope.api.getPrefillGroups
+      ? () => scope.api.getPrefillGroups!('model')
+      : () => getPrefillGroups('model'),
   })
 
   const { copyToClipboard } = useCopyToClipboard()
