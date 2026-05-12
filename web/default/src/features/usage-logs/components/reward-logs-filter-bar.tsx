@@ -59,12 +59,14 @@ export function RewardLogsFilterBar<TData>(
 
   useEffect(() => {
     const { start, end } = getDefaultTimeRange()
+    const typeArr = searchParams.type as string[] | undefined
+    const typeValue = typeArr && typeArr.length === 1 ? Number(typeArr[0]) : undefined
     setFilters({
       startTime: searchParams.startTime
         ? new Date(searchParams.startTime)
         : start,
       endTime: searchParams.endTime ? new Date(searchParams.endTime) : end,
-      ...(searchParams.type ? { type: Number(searchParams.type) } : {}),
+      ...(typeValue ? { type: typeValue } : {}),
       ...(searchParams.channel
         ? { channel: String(searchParams.channel) }
         : {}),
@@ -83,7 +85,7 @@ export function RewardLogsFilterBar<TData>(
       page: 1,
       ...(filters.startTime && { startTime: filters.startTime.getTime() }),
       ...(filters.endTime && { endTime: filters.endTime.getTime() }),
-      ...(filters.type && { type: filters.type }),
+      ...(filters.type ? { type: [String(filters.type)] } : {}),
       ...(filters.channel && { channel: filters.channel }),
     }
     navigate({

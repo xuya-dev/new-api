@@ -270,7 +270,10 @@ export async function fetchLogsByCategory(
       page_size: pageSize,
     }
     if (searchParams.type) {
-      rewardParams.type = searchParams.type
+      const typeArr = searchParams.type as string[]
+      if (Array.isArray(typeArr) && typeArr.length === 1) {
+        rewardParams.type = Number(typeArr[0])
+      }
     }
     if (searchParams.channel) {
       rewardParams.channel = searchParams.channel

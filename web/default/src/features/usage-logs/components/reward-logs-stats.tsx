@@ -36,7 +36,10 @@ export function RewardLogsStats() {
     queryFn: async () => {
       const params: Record<string, unknown> = {}
       if (searchParams.type) {
-        params.type = searchParams.type
+        const typeArr = searchParams.type as string[]
+        if (Array.isArray(typeArr) && typeArr.length === 1) {
+          params.type = Number(typeArr[0])
+        }
       }
       if (searchParams.channel) {
         params.channel = searchParams.channel
