@@ -30,12 +30,21 @@ func RecordRewardLog(log *ChannelRewardLog) error {
 	return DB.Create(log).Error
 }
 
-func GetRewardLogsByUser(userId int, logType int, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
+func GetRewardLogsByUser(userId int, logType int, channelId int, startTimestamp int64, endTimestamp int64, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
 	var logs []*ChannelRewardLog
 	var total int64
 	query := DB.Model(&ChannelRewardLog{}).Where("user_id = ?", userId)
 	if logType > 0 {
 		query = query.Where("type = ?", logType)
+	}
+	if channelId > 0 {
+		query = query.Where("channel_id = ?", channelId)
+	}
+	if startTimestamp > 0 {
+		query = query.Where("created_at >= ?", startTimestamp)
+	}
+	if endTimestamp > 0 {
+		query = query.Where("created_at <= ?", endTimestamp)
 	}
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -44,7 +53,7 @@ func GetRewardLogsByUser(userId int, logType int, startIdx int, pageSize int) ([
 	return logs, total, err
 }
 
-func GetAllRewardLogs(logType int, channelId int, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
+func GetAllRewardLogs(logType int, channelId int, startTimestamp int64, endTimestamp int64, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
 	var logs []*ChannelRewardLog
 	var total int64
 	query := DB.Model(&ChannelRewardLog{})
@@ -53,6 +62,12 @@ func GetAllRewardLogs(logType int, channelId int, startIdx int, pageSize int) ([
 	}
 	if channelId > 0 {
 		query = query.Where("channel_id = ?", channelId)
+	}
+	if startTimestamp > 0 {
+		query = query.Where("created_at >= ?", startTimestamp)
+	}
+	if endTimestamp > 0 {
+		query = query.Where("created_at <= ?", endTimestamp)
 	}
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err

@@ -368,9 +368,15 @@ export interface RewardLog {
   created_at: number
 }
 
+export interface RewardLogFilters extends CommonFilters {
+  type?: number
+}
+
 export interface GetRewardLogsParams {
   p?: number
   page_size?: number
   type?: number
   channel?: number
+  start_timestamp?: number
+  end_timestamp?: number
 }

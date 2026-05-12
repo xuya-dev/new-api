@@ -43,6 +43,7 @@ import { fetchLogsByCategory } from '../lib/utils'
 import type { LogCategory } from '../types'
 import { CommonLogsFilterBar } from './common-logs-filter-bar'
 import { TaskLogsFilterBar } from './task-logs-filter-bar'
+import { RewardLogsFilterBar } from './reward-logs-filter-bar'
 
 const route = getRouteApi('/_authenticated/usage-logs/$section')
 
@@ -174,10 +175,12 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
       skeletonKeyPrefix='usage-log-skeleton'
       tableHeaderClassName='bg-muted/30 sticky top-0 z-10'
       toolbar={
-        isReward ? null : isCommon ? (
+        isReward ? (
+          <RewardLogsFilterBar table={table} />
+        ) : isCommon ? (
           <CommonLogsFilterBar table={table} />
         ) : (
-          <TaskLogsFilterBar table={table} logCategory={logCategory as Extract<LogCategory, 'drawing' | 'task'>} />
+          <TaskLogsFilterBar table={table} logCategory={logCategory} />
         )
       }
       renderRow={(row) => {

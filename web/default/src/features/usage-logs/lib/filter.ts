@@ -25,6 +25,7 @@ import type {
   LogFilters,
   CommonLogFilters,
   DrawingLogFilters,
+  RewardLogFilters,
   TaskLogFilters,
 } from '../types'
 
@@ -69,6 +70,13 @@ export function buildSearchParams(
       return {
         ...baseParams,
         ...(taskFilters.taskId && { filter: taskFilters.taskId }),
+      }
+    }
+      case 'reward': {
+      const rewardFilters = filters as RewardLogFilters
+      return {
+        ...baseParams,
+        ...(rewardFilters.type && { type: rewardFilters.type }),
       }
     }
     default:

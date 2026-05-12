@@ -275,6 +275,16 @@ export async function fetchLogsByCategory(
     if (searchParams.channel) {
       rewardParams.channel = searchParams.channel
     }
+    if (searchParams.startTime) {
+      rewardParams.start_timestamp = Math.floor(
+        (searchParams.startTime as number) / 1000
+      )
+    }
+    if (searchParams.endTime) {
+      rewardParams.end_timestamp = Math.floor(
+        (searchParams.endTime as number) / 1000
+      )
+    }
     return isAdmin
       ? await getAllRewardLogs(rewardParams)
       : await getUserRewardLogs(rewardParams)
