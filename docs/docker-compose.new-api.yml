@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  new-api:
+    image: calciumion/new-api:latest
+    container_name: shared-new-api
+    restart: unless-stopped
+    volumes:
+      - ./new-api/data:/data
+      - ./new-api/logs:/app/logs
+    environment:
+      # ===== MySQL =====
+      - SQL_DSN=root:Yuanxu123..@tcp(mysql:3306)/new-api?parseTime=true
+
+      # ===== Redis =====
+      - REDIS_CONN_STRING=redis://:Yuanxu123..@redis:6379/0
+
+      # ===== 安全（生产环境必填）=====
+      - SESSION_SECRET=替换成一个64位随机字符串
+
+      # ===== 缓存与性能 =====
+      - MEMORY_CACHE_ENABLED=true
+      - SYNC_FREQUENCY=60
+      - BATCH_UPDATE_ENABLED=true
+      - BATCH_UPDATE_INTERVAL=5
+      - ERROR_LOG_ENABLED=true
+
+      # ===== 渠道监控（可选）=====
+      # - CHANNEL_TEST_FREQUENCY=600
+
+      # ===== 其他 =====
+      - TZ=Asia/Shanghai
+      - NODE_NAME=prod-1
+    networks:
+      - app-shared-network
+    depends_on:
+      - mysql
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  app-shared-network:
+    external: true

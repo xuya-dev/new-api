@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # ================= 共享 PostgreSQL =================
+  postgres:
+    image: postgres:18-alpine
+    container_name: shared-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Yuanxu123..
+      POSTGRES_DB: main_db
+      PGDATA: /var/lib/postgresql/data
+      TZ: Asia/Shanghai
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    ports:
+      - "0.0.0.0:5432:5432"
+    networks:
+      - app-shared-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d main_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      postgres 
+      -c max_connections=200 
+      -c shared_buffers=256MB
+
+  # ================= 共享 MySQL =================
+  mysql:
+    image: mysql:8.4
+    container_name: shared-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Yuanxu123..
+      MYSQL_DATABASE: main_db
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf:/etc/mysql/conf.d
+    ports:
+      - "0.0.0.0:3306:3306"
+    networks:
+      - app-shared-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pYuanxu123.."]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max-connections=200
+      --innodb-buffer-pool-size=256M
+
+  # ================= 共享 Redis =================
+  redis:
+    image: redis:8-alpine
+    container_name: shared-redis
+    restart: unless-stopped
+    command: >
+      sh -c '
+      redis-server
+      --save 60 1
+      --appendonly yes
+      --appendfsync everysec
+      --requirepass Yuanxu123..
+      '
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./redis/data:/data
+    ports:
+      - "0.0.0.0:6379:6379"
+    networks:
+      - app-shared-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "Yuanxu123..", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ================= 共享 Nginx 反向代理 =================
+  nginx:
+    image: nginx:alpine
+    container_name: shared-nginx
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-shared-network
+    depends_on:
+      - postgres
+      - mysql
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  app-shared-network:
+    name: app-shared-network
+    driver: bridge
