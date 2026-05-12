@@ -303,6 +303,7 @@ export function ChannelMutateDrawer({
   const scope = useChannelScope()
   const createChannel = scope?.api.createChannel ?? adminCreateChannel
   const updateChannel = scope?.api.updateChannel ?? adminUpdateChannel
+  const fetchModelsFn = scope.api.fetchModels ?? fetchModels
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [customModel, setCustomModel] = useState('')
   const [isFetchingModels, setIsFetchingModels] = useState(false)
@@ -791,7 +792,7 @@ export function ChannelMutateDrawer({
 
     setIsFetchingModels(true)
     try {
-      const response = await fetchModels({
+      const response = await fetchModelsFn({
         type,
         key,
         base_url: form.getValues('base_url') || '',

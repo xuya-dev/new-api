@@ -268,6 +268,7 @@ func SetApiRouter(router *gin.Engine) {
 			userChannelRoute.GET("/test/:id", controller.TestUserChannel)
 			userChannelRoute.GET("/models", controller.ChannelListModels)
 			userChannelRoute.GET("/models_enabled", controller.EnabledListModels)
+			userChannelRoute.POST("/fetch_models", controller.FetchModels)
 		}
 		monitorRoute := apiRouter.Group("/monitor")
 		monitorRoute.Use(middleware.UserAuth())

@@ -102,6 +102,19 @@ async function getUserAllModels() {
   }
 }
 
+async function fetchUserModels(data: {
+  base_url: string
+  type: number
+  key: string
+}) {
+  const res = await api.post('/api/user/channel/fetch_models', data)
+  return res.data as {
+    success: boolean
+    message?: string
+    data?: string[]
+  }
+}
+
 async function getUserPrefillGroups(
   type: 'model' | 'group' = 'model'
 ) {
@@ -135,6 +148,7 @@ export const userChannelScope: ChannelScopeType = {
     getAllModels: getUserAllModels,
     getPrefillGroups: getUserPrefillGroups,
     getGroups: getUserGroups,
+    fetchModels: fetchUserModels,
   },
   queryKeys: myChannelsQueryKeys,
   features: {

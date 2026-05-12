@@ -72,6 +72,15 @@ export type ChannelScopeApi = {
     message?: string
     data?: string[]
   }>
+  fetchModels?: (data: {
+    base_url: string
+    type: number
+    key: string
+  }) => Promise<{
+    success: boolean
+    message?: string
+    data?: string[]
+  }>
   testAllChannels?: () => Promise<{ success: boolean; message?: string }>
   updateAllChannelsBalance?: () => Promise<{
     success: boolean
