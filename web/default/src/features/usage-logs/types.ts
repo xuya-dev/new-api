@@ -361,6 +361,7 @@ export interface UserInfo {
 export interface RewardLog {
   id: number
   user_id: number
+  username: string
   channel_id: number
   type: number
   quota: number
@@ -375,6 +376,7 @@ export interface RewardLogStats {
 
 export interface RewardLogFilters extends CommonFilters {
   type?: number
+  username?: string
 }
 
 export interface GetRewardLogStatsParams {
@@ -395,6 +397,7 @@ export interface GetRewardLogsParams {
   page_size?: number
   type?: number
   channel?: number
+  username?: string
   start_timestamp?: number
   end_timestamp?: number
 }

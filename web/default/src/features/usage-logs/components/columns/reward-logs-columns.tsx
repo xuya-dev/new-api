@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
+import { useIsAdmin } from '@/hooks/use-admin'
 import type { RewardLog } from '../../types'
 
 export const REWARD_TYPE_CONFIG = {
@@ -81,8 +82,9 @@ function formatRewardQuota(quota: number): string {
 
 export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
   const { t } = useTranslation()
+  const isAdmin = useIsAdmin()
 
-  return [
+  const columns: ColumnDef<RewardLog>[] = [
     {
       accessorKey: 'created_at',
       header: ({ column }) => (
@@ -138,6 +140,28 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
       },
       meta: { label: t('Channel'), mobileHidden: true },
     },
+    ...(isAdmin
+      ? [
+          {
+            accessorKey: 'username',
+            header: ({ column }: { column: import('@tanstack/react-table').Column<RewardLog, unknown> }) => (
+              <DataTableColumnHeader column={column} title={t('User')} />
+            ),
+            cell: ({ row }: { row: import('@tanstack/react-table').Row<RewardLog> }) => {
+              const username = row.original.username
+              if (!username) return <span className='text-muted-foreground text-xs'>-</span>
+              return (
+                <StatusBadge
+                  label={username}
+                  autoColor={username}
+                  size='sm'
+                />
+              )
+            },
+            meta: { label: t('User'), mobileHidden: true },
+          } as ColumnDef<RewardLog>,
+        ]
+      : []),
     {
       accessorKey: 'type',
       header: ({ column }) => (
@@ -277,4 +301,6 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
       size: 180,
     },
   ]
+
+  return columns
 }

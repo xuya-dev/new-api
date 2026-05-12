@@ -70,8 +70,11 @@ export function RewardLogsFilterBar<TData>(
       ...(searchParams.channel
         ? { channel: String(searchParams.channel) }
         : {}),
+      ...(searchParams.username
+        ? { username: String(searchParams.username) }
+        : {}),
     })
-  }, [searchParams.startTime, searchParams.endTime, searchParams.type, searchParams.channel])
+  }, [searchParams.startTime, searchParams.endTime, searchParams.type, searchParams.channel, searchParams.username])
 
   const handleChange = useCallback(
     (field: keyof RewardLogFilters, value: Date | string | number | undefined) => {
@@ -87,6 +90,7 @@ export function RewardLogsFilterBar<TData>(
       ...(filters.endTime && { endTime: filters.endTime.getTime() }),
       ...(filters.type ? { type: [String(filters.type)] } : {}),
       ...(filters.channel && { channel: filters.channel }),
+      ...(filters.username && { username: filters.username }),
     }
     navigate({
       to: '/usage-logs/$section',
@@ -120,7 +124,7 @@ export function RewardLogsFilterBar<TData>(
     [handleApply]
   )
 
-  const hasAdditionalFilters = !!filters.type || !!filters.channel
+  const hasAdditionalFilters = !!filters.type || !!filters.channel || !!filters.username
 
   return (
     <DataTableToolbar
@@ -159,13 +163,22 @@ export function RewardLogsFilterBar<TData>(
             </SelectContent>
           </Select>
           {isAdmin && (
-            <Input
-              placeholder={t('Channel ID')}
-              value={filters.channel || ''}
-              onChange={(e) => handleChange('channel', e.target.value)}
-              onKeyDown={handleKeyDown}
-              className='w-full sm:w-[160px]'
-            />
+            <>
+              <Input
+                placeholder={t('Username')}
+                value={filters.username || ''}
+                onChange={(e) => handleChange('username', e.target.value)}
+                onKeyDown={handleKeyDown}
+                className='w-full sm:w-[160px]'
+              />
+              <Input
+                placeholder={t('Channel ID')}
+                value={filters.channel || ''}
+                onChange={(e) => handleChange('channel', e.target.value)}
+                onKeyDown={handleKeyDown}
+                className='w-full sm:w-[160px]'
+              />
+            </>
           )}
         </>
       }

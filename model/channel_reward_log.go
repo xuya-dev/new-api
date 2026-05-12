@@ -30,6 +30,11 @@ type ChannelRewardLog struct {
 	CreatedAt int64  `json:"created_at" gorm:"bigint"`
 }
 
+type RewardLogWithUser struct {
+	*ChannelRewardLog
+	Username string `json:"username"`
+}
+
 func RecordRewardLog(log *ChannelRewardLog) error {
 	return DB.Create(log).Error
 }
@@ -57,7 +62,13 @@ func GetRewardLogsByUser(userId int, logType int, channelId int, startTimestamp 
 	return logs, total, err
 }
 
-func GetAllRewardLogs(logType int, channelId int, startTimestamp int64, endTimestamp int64, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
+func FindUserIdsByUsername(username string) ([]int, error) {
+	var ids []int
+	err := DB.Model(&User{}).Where("username LIKE ?", "%"+username+"%").Pluck("id", &ids).Error
+	return ids, err
+}
+
+func GetAllRewardLogs(logType int, channelId int, userIds []int, startTimestamp int64, endTimestamp int64, startIdx int, pageSize int) ([]*ChannelRewardLog, int64, error) {
 	var logs []*ChannelRewardLog
 	var total int64
 	query := DB.Model(&ChannelRewardLog{})
@@ -66,6 +77,9 @@ func GetAllRewardLogs(logType int, channelId int, startTimestamp int64, endTimes
 	}
 	if channelId > 0 {
 		query = query.Where("channel_id = ?", channelId)
+	}
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
 	}
 	if startTimestamp > 0 {
 		query = query.Where("created_at >= ?", startTimestamp)

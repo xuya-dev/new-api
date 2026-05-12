@@ -77,6 +77,7 @@ export function buildSearchParams(
       return {
         ...baseParams,
         ...(rewardFilters.type && { type: rewardFilters.type }),
+        ...(rewardFilters.username && { username: rewardFilters.username }),
       }
     }
     default:

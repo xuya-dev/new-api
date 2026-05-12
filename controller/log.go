@@ -211,14 +211,49 @@ func GetAllRewardLogs(c *gin.Context) {
 	channelId, _ := strconv.Atoi(c.Query("channel"))
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
-	logs, total, err := model.GetAllRewardLogs(logType, channelId, startTimestamp, endTimestamp, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
+	username := c.Query("username")
+
+	var userIds []int
+	if username != "" {
+		var err error
+		userIds, err = model.FindUserIdsByUsername(username)
+		if err != nil || len(userIds) == 0 {
+			pageInfo.SetTotal(0)
+			pageInfo.SetItems([]*model.RewardLogWithUser{})
+			common.ApiSuccess(c, pageInfo)
+			return
+		}
+	}
+
+	logs, total, err := model.GetAllRewardLogs(logType, channelId, userIds, startTimestamp, endTimestamp, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
+	result := enrichRewardLogsWithUsernames(logs)
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(logs)
+	pageInfo.SetItems(result)
 	common.ApiSuccess(c, pageInfo)
+}
+
+func enrichRewardLogsWithUsernames(logs []*model.ChannelRewardLog) []*model.RewardLogWithUser {
+	results := make([]*model.RewardLogWithUser, 0, len(logs))
+	usernameCache := make(map[int]string)
+	for _, log := range logs {
+		username, ok := usernameCache[log.UserId]
+		if !ok {
+			name, err := model.GetUsernameById(log.UserId, false)
+			if err == nil {
+				username = name
+			}
+			usernameCache[log.UserId] = username
+		}
+		results = append(results, &model.RewardLogWithUser{
+			ChannelRewardLog: log,
+			Username:         username,
+		})
+	}
+	return results
 }
 
 func GetUserRewardLogs(c *gin.Context) {
