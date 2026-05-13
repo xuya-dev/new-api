@@ -260,10 +260,32 @@ func enrichRewardLogsWithUsernames(logs []*model.ChannelRewardLog) []*model.Rewa
 				channelNameCache[log.ChannelId] = channelName
 			}
 		}
+
+		// consumed_channel_id: for usage bonus (type=2) it is the actual consumed channel from Detail
+		consumedChannelId := log.ChannelId
+		if log.Type == model.RewardTypeUsage && log.Detail != "" {
+			if id, err := strconv.Atoi(log.Detail); err == nil && id > 0 {
+				consumedChannelId = id
+			}
+		}
+		var consumedChannelName string
+		if consumedChannelId > 0 {
+			consumedChannelName, ok = channelNameCache[consumedChannelId]
+			if !ok {
+				name, err := model.GetChannelNameById(consumedChannelId)
+				if err == nil {
+					consumedChannelName = name
+				}
+				channelNameCache[consumedChannelId] = consumedChannelName
+			}
+		}
+
 		results = append(results, &model.RewardLogWithUser{
-			ChannelRewardLog: log,
-			Username:         username,
-			ChannelName:      channelName,
+			ChannelRewardLog:    log,
+			Username:            username,
+			ChannelName:         channelName,
+			ConsumedChannelId:   consumedChannelId,
+			ConsumedChannelName: consumedChannelName,
 		})
 	}
 	return results

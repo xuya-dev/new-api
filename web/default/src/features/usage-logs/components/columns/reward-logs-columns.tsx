@@ -122,9 +122,10 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
         <DataTableColumnHeader column={column} title={t('Channel')} />
       ),
       cell: ({ row }) => {
-        const id = row.original.channel_id
-        const channelName = row.original.channel_name
         const type = row.original.type
+        // 使用返利（type=2）展示实际消费渠道，其他类型展示 channel_id
+        const id = type === 2 ? row.original.consumed_channel_id : row.original.channel_id
+        const channelName = type === 2 ? row.original.consumed_channel_name : row.original.channel_name
         if (!id || type === 3 || type === 4 || type === 5 || type === 6) {
           return <span className='text-muted-foreground text-xs'>-</span>
         }

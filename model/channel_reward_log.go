@@ -34,8 +34,10 @@ type ChannelRewardLog struct {
 
 type RewardLogWithUser struct {
 	*ChannelRewardLog
-	Username    string `json:"username"`
-	ChannelName string `json:"channel_name"`
+	Username           string `json:"username"`
+	ChannelName        string `json:"channel_name"`
+	ConsumedChannelId  int    `json:"consumed_channel_id"`
+	ConsumedChannelName string `json:"consumed_channel_name"`
 }
 
 func GetChannelNameById(channelId int) (string, error) {
