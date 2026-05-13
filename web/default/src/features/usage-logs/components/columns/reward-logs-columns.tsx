@@ -253,11 +253,14 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
             return (
               <div className='flex flex-col gap-0.5'>
                 <span className='text-muted-foreground/70 text-xs'>
-                  {t('Model')}
+                  {t('Consumed channel')}
                 </span>
-                <span className='font-mono text-xs font-medium'>
-                  {detail}
-                </span>
+                <StatusBadge
+                  label={`#${detail}`}
+                  autoColor={detail}
+                  size='sm'
+                  className='font-mono w-fit'
+                />
               </div>
             )
           case 3:
