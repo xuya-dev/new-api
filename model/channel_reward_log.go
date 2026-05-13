@@ -2,8 +2,10 @@ package model
 
 import (
 	"fmt"
+	"sync/atomic"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/setting/ratio_setting"
 )
 
 type ChannelRewardSummary struct {
@@ -109,11 +111,56 @@ func GetChannelUserId(channelId int) (int, error) {
 	return channel.UserId, nil
 }
 
-func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64) {
+var usageBonusRoundRobin uint64
+
+func GetGroupModelChannelIds(group string, modelName string) []int {
+	if !common.MemoryCacheEnabled {
+		var ids []int
+		err := DB.Model(&Ability{}).
+			Where(commonGroupCol+" = ? AND model = ? AND enabled = ?", group, modelName, true).
+			Pluck("channel_id", &ids).Error
+		if err != nil {
+			return nil
+		}
+		return ids
+	}
+
+	channelSyncLock.RLock()
+	defer channelSyncLock.RUnlock()
+
+	channels := group2model2channels[group][modelName]
+	if len(channels) == 0 {
+		normalizedModel := ratio_setting.FormatMatchingModelName(modelName)
+		channels = group2model2channels[group][normalizedModel]
+	}
+	if len(channels) == 0 {
+		return nil
+	}
+
+	enabled := make([]int, 0, len(channels))
+	for _, id := range channels {
+		if ch, ok := channelsIDM[id]; ok && ch.Status == common.ChannelStatusEnabled {
+			enabled = append(enabled, id)
+		}
+	}
+	return enabled
+}
+
+func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64, group string, modelName string) {
 	if bonusRate <= 0 || consumedQuota <= 0 {
 		return
 	}
-	userId, err := GetChannelUserId(channelId)
+
+	targetChannelId := channelId
+	if group != "" && modelName != "" {
+		ids := GetGroupModelChannelIds(group, modelName)
+		if len(ids) > 0 {
+			idx := atomic.AddUint64(&usageBonusRoundRobin, 1)
+			targetChannelId = ids[idx%uint64(len(ids))]
+		}
+	}
+
+	userId, err := GetChannelUserId(targetChannelId)
 	if err != nil {
 		return
 	}
@@ -129,12 +176,12 @@ func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64) {
 		return
 	}
 	if err := IncreaseUserQuota(userId, bonus, false); err != nil {
-		common.SysLog(fmt.Sprintf("failed to grant usage bonus: channel_id=%d, error=%s", channelId, err.Error()))
+		common.SysLog(fmt.Sprintf("failed to grant usage bonus: channel_id=%d, error=%s", targetChannelId, err.Error()))
 		return
 	}
 	_ = RecordRewardLog(&ChannelRewardLog{
 		UserId:    userId,
-		ChannelId: channelId,
+		ChannelId: targetChannelId,
 		Type:      RewardTypeUsage,
 		Quota:     bonus,
 		Detail:    fmt.Sprintf("%d", channelId),
