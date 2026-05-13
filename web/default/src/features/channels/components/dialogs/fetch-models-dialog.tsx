@@ -51,6 +51,7 @@ import {
   normalizeModelName,
   parseModelsString,
 } from '../../lib'
+import { useChannelScope } from '../../lib/channel-scope'
 import { useChannels } from '../channels-provider'
 
 function normalizeModelNameList(models: readonly string[]): string[] {
@@ -76,6 +77,7 @@ export function FetchModelsDialog({
 }: FetchModelsDialogProps) {
   const { t } = useTranslation()
   const { currentRow } = useChannels()
+  const scope = useChannelScope()
   const queryClient = useQueryClient()
   const [isFetching, setIsFetching] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -132,7 +134,8 @@ export function FetchModelsDialog({
 
     setIsFetching(true)
     try {
-      const response = await fetchUpstreamModels(currentRow.id)
+      const fetchFn = scope.api.fetchUpstreamModels ?? fetchUpstreamModels
+      const response = await fetchFn(currentRow.id)
       if (response.success) {
         const list = Array.isArray(response.data) ? response.data : []
         setFetchedModels(list)
@@ -167,7 +170,8 @@ export function FetchModelsDialog({
     setIsSaving(true)
     try {
       const modelsString = selectedModels.join(',')
-      const response = await updateChannel(currentRow.id, {
+      const updateFn = scope.api.updateChannel ?? updateChannel
+      const response = await updateFn(currentRow.id, {
         models: modelsString,
       })
       if (response.success) {

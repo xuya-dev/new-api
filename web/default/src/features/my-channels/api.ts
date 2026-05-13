@@ -145,6 +145,15 @@ async function updateUserChannelBalance(id: number) {
   }
 }
 
+async function fetchUserUpstreamModels(id: number) {
+  const res = await api.get(`/api/user/channel/fetch_models/${id}`)
+  return res.data as {
+    success: boolean
+    message?: string
+    data?: string[]
+  }
+}
+
 export const userChannelScope: ChannelScopeType = {
   api: {
     getChannels: getUserChannels,
@@ -160,6 +169,7 @@ export const userChannelScope: ChannelScopeType = {
     getPrefillGroups: getUserPrefillGroups,
     getGroups: getUserGroups,
     fetchModels: fetchUserModels,
+    fetchUpstreamModels: fetchUserUpstreamModels,
   },
   queryKeys: myChannelsQueryKeys,
   features: {
