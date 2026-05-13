@@ -151,6 +151,8 @@ export async function handleDeleteChannel(
         queryKey: getQueryKeys(scope).lists(),
       })
       onSuccess?.()
+    } else {
+      toast.error(response.message || i18next.t(ERROR_MESSAGES.DELETE_FAILED))
     }
   } catch (_error) {
     toast.error(i18next.t(ERROR_MESSAGES.DELETE_FAILED))
