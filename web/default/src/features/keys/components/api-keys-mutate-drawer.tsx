@@ -173,7 +173,11 @@ export function ApiKeysMutateDrawer({
       getApiKey(currentRow.id).then((result) => {
         if (result.success && result.data) {
           form.reset(transformApiKeyToFormDefaults(result.data))
+        } else {
+          toast.error(result.message || t('Failed to load API key data'))
         }
+      }).catch(() => {
+        toast.error(t('Failed to load API key data'))
       })
     } else if (open && !isUpdate) {
       // For create, reset to defaults
@@ -288,7 +292,15 @@ export function ApiKeysMutateDrawer({
         <Form {...form}>
           <form
             id='api-key-form'
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(
+              onSubmit,
+              (errors) => {
+                const firstError = Object.values(errors)[0]
+                if (firstError?.message) {
+                  toast.error(firstError.message)
+                }
+              }
+            )}
             className='min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 sm:space-y-4 sm:px-4 sm:py-4'
           >
             <ApiKeyFormSection
