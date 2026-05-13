@@ -239,6 +239,7 @@ func GetAllRewardLogs(c *gin.Context) {
 func enrichRewardLogsWithUsernames(logs []*model.ChannelRewardLog) []*model.RewardLogWithUser {
 	results := make([]*model.RewardLogWithUser, 0, len(logs))
 	usernameCache := make(map[int]string)
+	channelNameCache := make(map[int]string)
 	for _, log := range logs {
 		username, ok := usernameCache[log.UserId]
 		if !ok {
@@ -248,9 +249,21 @@ func enrichRewardLogsWithUsernames(logs []*model.ChannelRewardLog) []*model.Rewa
 			}
 			usernameCache[log.UserId] = username
 		}
+		var channelName string
+		if log.ChannelId > 0 {
+			channelName, ok = channelNameCache[log.ChannelId]
+			if !ok {
+				name, err := model.GetChannelNameById(log.ChannelId)
+				if err == nil {
+					channelName = name
+				}
+				channelNameCache[log.ChannelId] = channelName
+			}
+		}
 		results = append(results, &model.RewardLogWithUser{
 			ChannelRewardLog: log,
 			Username:         username,
+			ChannelName:      channelName,
 		})
 	}
 	return results
@@ -268,7 +281,8 @@ func GetUserRewardLogs(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	result := enrichRewardLogsWithUsernames(logs)
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(logs)
+	pageInfo.SetItems(result)
 	common.ApiSuccess(c, pageInfo)
 }

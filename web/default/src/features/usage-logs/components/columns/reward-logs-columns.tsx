@@ -123,19 +123,24 @@ export function useRewardLogsColumns(): ColumnDef<RewardLog>[] {
       ),
       cell: ({ row }) => {
         const id = row.original.channel_id
+        const channelName = row.original.channel_name
         const type = row.original.type
-        // 非渠道奖励（签到/邀请/注册）不显示渠道
         if (!id || type === 3 || type === 4 || type === 5 || type === 6) {
           return <span className='text-muted-foreground text-xs'>-</span>
         }
         return (
-          <StatusBadge
-            label={`#${id}`}
-            autoColor={String(id)}
-            copyText={String(id)}
-            size='sm'
-            className='font-mono'
-          />
+          <div className='flex flex-col gap-0.5'>
+            {channelName && (
+              <span className='text-xs font-medium'>{channelName}</span>
+            )}
+            <StatusBadge
+              label={`#${id}`}
+              autoColor={String(id)}
+              copyText={String(id)}
+              size='sm'
+              className='font-mono'
+            />
+          </div>
         )
       },
       meta: { label: t('Channel'), mobileHidden: true },

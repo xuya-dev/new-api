@@ -284,9 +284,10 @@ export function ChannelsTable({
 
   const totalCount = data?.data?.total || 0
   const typeCounts = data?.data?.type_counts
+  const usernameMap = (data?.data as Record<string, unknown>)?.username_map as Record<string, string> | undefined
 
   // Columns configuration
-  const columns = useChannelsColumns()
+  const columns = useChannelsColumns(usernameMap)
 
   // React Table instance
   const table = useReactTable({

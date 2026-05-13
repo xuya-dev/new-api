@@ -122,6 +122,7 @@ export interface GetChannelsResponse {
     page: number
     page_size: number
     type_counts?: Record<string, number>
+    username_map?: Record<string, string>
   }
 }
 
@@ -132,6 +133,7 @@ export interface SearchChannelsResponse {
     items: Channel[]
     total: number
     type_counts?: Record<string, number>
+    username_map?: Record<string, string>
   }
 }
 

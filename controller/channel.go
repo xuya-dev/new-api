@@ -159,12 +159,26 @@ func GetAllChannels(c *gin.Context) {
 	for _, r := range results {
 		typeCounts[r.Type] = r.Count
 	}
+
+	usernameMap := make(map[int]string)
+	for _, ch := range channelData {
+		if ch.UserId > 0 {
+			if _, ok := usernameMap[ch.UserId]; !ok {
+				name, err := model.GetUsernameById(ch.UserId, false)
+				if err == nil {
+					usernameMap[ch.UserId] = name
+				}
+			}
+		}
+	}
+
 	common.ApiSuccess(c, gin.H{
-		"items":       channelData,
-		"total":       total,
-		"page":        pageInfo.GetPage(),
-		"page_size":   pageInfo.GetPageSize(),
-		"type_counts": typeCounts,
+		"items":        channelData,
+		"total":        total,
+		"page":         pageInfo.GetPage(),
+		"page_size":    pageInfo.GetPageSize(),
+		"type_counts":  typeCounts,
+		"username_map": usernameMap,
 	})
 	return
 }

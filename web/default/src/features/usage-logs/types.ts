@@ -363,6 +363,7 @@ export interface RewardLog {
   user_id: number
   username: string
   channel_id: number
+  channel_name: string
   type: number
   quota: number
   detail: string

@@ -451,7 +451,9 @@ function BalanceCell({ channel }: { channel: Channel }) {
 /**
  * Generate channels columns configuration
  */
-export function useChannelsColumns(): ColumnDef<Channel>[] {
+export function useChannelsColumns(
+  usernameMap?: Record<string, string>
+): ColumnDef<Channel>[] {
   const { t } = useTranslation()
   const scope = useChannelScope()
   const isAdmin = useIsAdmin()
@@ -656,17 +658,23 @@ export function useChannelsColumns(): ColumnDef<Channel>[] {
               if (!userId) {
                 return <span className='text-muted-foreground text-xs'>{t('System')}</span>
               }
+              const username = usernameMap?.[String(userId)] || ''
               return (
-                <StatusBadge
-                  label={`#${userId}`}
-                  autoColor={String(userId)}
-                  copyText={String(userId)}
-                  size='sm'
-                  className='font-mono'
-                />
+                <div className='flex flex-col gap-0.5'>
+                  {username && (
+                    <span className='text-xs font-medium'>{username}</span>
+                  )}
+                  <StatusBadge
+                    label={`#${userId}`}
+                    autoColor={String(userId)}
+                    copyText={String(userId)}
+                    size='sm'
+                    className='font-mono'
+                  />
+                </div>
               )
             },
-            size: 80,
+            size: 100,
           } as ColumnDef<Channel>,
         ]
       : []),

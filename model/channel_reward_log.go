@@ -32,7 +32,14 @@ type ChannelRewardLog struct {
 
 type RewardLogWithUser struct {
 	*ChannelRewardLog
-	Username string `json:"username"`
+	Username    string `json:"username"`
+	ChannelName string `json:"channel_name"`
+}
+
+func GetChannelNameById(channelId int) (string, error) {
+	var name string
+	err := DB.Model(&Channel{}).Where("id = ?", channelId).Select("name").Limit(1).Row().Scan(&name)
+	return name, err
 }
 
 func RecordRewardLog(log *ChannelRewardLog) error {
