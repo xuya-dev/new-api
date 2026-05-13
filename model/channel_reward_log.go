@@ -179,12 +179,16 @@ func GrantUsageBonus(channelId int, consumedQuota int, bonusRate float64, group 
 		common.SysLog(fmt.Sprintf("failed to grant usage bonus: channel_id=%d, error=%s", targetChannelId, err.Error()))
 		return
 	}
+	detail := modelName
+	if detail == "" {
+		detail = fmt.Sprintf("%d", channelId)
+	}
 	_ = RecordRewardLog(&ChannelRewardLog{
 		UserId:    userId,
 		ChannelId: targetChannelId,
 		Type:      RewardTypeUsage,
 		Quota:     bonus,
-		Detail:    fmt.Sprintf("%d", channelId),
+		Detail:    detail,
 		CreatedAt: common.GetTimestamp(),
 	})
 }
