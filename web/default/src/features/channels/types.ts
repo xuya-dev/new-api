@@ -72,6 +72,7 @@ export const channelSchema = z.object({
   }),
   settings: z.string().default('{}'), // other_settings JSON
   reward_quota: z.number().default(0),
+  user_id: z.number().default(0),
 })
 
 export type Channel = z.infer<typeof channelSchema>

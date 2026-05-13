@@ -76,6 +76,7 @@ import { useChannelScope } from '../lib/channel-scope'
 import { parseUpstreamUpdateMeta } from '../lib/upstream-update-utils'
 import type { Channel } from '../types'
 import { useChannels } from './channels-provider'
+import { useIsAdmin } from '@/hooks/use-admin'
 import { DataTableRowActions } from './data-table-row-actions'
 import { DataTableTagRowActions } from './data-table-tag-row-actions'
 import {
@@ -453,6 +454,7 @@ function BalanceCell({ channel }: { channel: Channel }) {
 export function useChannelsColumns(): ColumnDef<Channel>[] {
   const { t } = useTranslation()
   const scope = useChannelScope()
+  const isAdmin = useIsAdmin()
   const showReward = scope.features.rewardColumn
 
   const rewardColumn: ColumnDef<Channel> = {
@@ -639,6 +641,35 @@ export function useChannelsColumns(): ColumnDef<Channel>[] {
       },
       minSize: 200,
     },
+
+    // Owner column (admin only)
+    ...(isAdmin
+      ? [
+          {
+            accessorKey: 'user_id',
+            meta: { label: t('Owner'), mobileHidden: true },
+            header: ({ column }: { column: import('@tanstack/react-table').Column<Channel, unknown> }) => (
+              <DataTableColumnHeader column={column} title={t('Owner')} />
+            ),
+            cell: ({ row }: { row: import('@tanstack/react-table').Row<Channel> }) => {
+              const userId = row.original.user_id
+              if (!userId) {
+                return <span className='text-muted-foreground text-xs'>{t('System')}</span>
+              }
+              return (
+                <StatusBadge
+                  label={`#${userId}`}
+                  autoColor={String(userId)}
+                  copyText={String(userId)}
+                  size='sm'
+                  className='font-mono'
+                />
+              )
+            },
+            size: 80,
+          } as ColumnDef<Channel>,
+        ]
+      : []),
 
     // Type column
     {

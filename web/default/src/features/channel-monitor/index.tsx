@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -7,7 +7,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChevronDown, ChevronRight, RefreshCw } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ChevronDown, ChevronRight, RefreshCw, Search } from 'lucide-react'
 import { CHANNEL_TYPES } from '@/features/channels/constants'
 import * as monitorApi from './api'
 
@@ -61,6 +62,7 @@ function HourlyTrendChart({ stats }: { stats: monitorApi.HourlyStatus[] }) {
 export function ChannelMonitor() {
   const { t } = useTranslation()
   const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['channel-monitor'],
@@ -68,7 +70,15 @@ export function ChannelMonitor() {
     refetchInterval: 30000,
   })
 
-  const channels: monitorApi.MonitorChannel[] = data?.data || []
+  const allChannels: monitorApi.MonitorChannel[] = data?.data || []
+  const channels = useMemo(() => {
+    if (!search.trim()) return allChannels
+    const keyword = search.trim().toLowerCase()
+    return allChannels.filter(ch =>
+      ch.name.toLowerCase().includes(keyword) ||
+      String(ch.id).includes(keyword)
+    )
+  }, [allChannels, search])
 
   const enabledCount = channels.filter(c => c.status === 1).length
   const disabledCount = channels.filter(c => c.status !== 1).length
@@ -104,9 +114,20 @@ export function ChannelMonitor() {
       <Card>
         <CardHeader className='flex flex-row items-center justify-between pb-2'>
           <CardTitle>{t('Channel Monitor')}</CardTitle>
-          <Button variant='outline' size='icon' onClick={() => refetch()}>
-            <RefreshCw className='size-4' />
-          </Button>
+          <div className='flex items-center gap-2'>
+            <div className='relative'>
+              <Search className='absolute left-2.5 top-2.5 size-4 text-muted-foreground' />
+              <Input
+                placeholder={t('Search by name or ID...')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className='w-60 pl-8'
+              />
+            </div>
+            <Button variant='outline' size='icon' onClick={() => refetch()}>
+              <RefreshCw className='size-4' />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
